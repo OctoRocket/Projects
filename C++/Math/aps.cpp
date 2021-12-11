@@ -3,7 +3,7 @@ using namespace std;
 
 int main()
 {
-	int x = 1;
+	unsigned long long x = 1;
 	while(true)
 	{
 		cout << x*x << endl;
