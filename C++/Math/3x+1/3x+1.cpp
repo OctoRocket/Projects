@@ -77,7 +77,7 @@ int main()
             }
         }
         else {
-            cout << "Try again!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+            cout << "Try again!\n";
         }
     }
 } 
