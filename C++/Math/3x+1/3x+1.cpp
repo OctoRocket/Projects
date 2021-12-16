@@ -9,7 +9,7 @@ void sleep(int sleep_time)
     this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 }
 
-void automatic_input()
+void automatic_input(int ms)
 {
     unsigned long long number = 1;
     unsigned long long x = number;
@@ -20,7 +20,7 @@ void automatic_input()
             number++;
             x = number;
             iterations = 0;
-            sleep(500);
+            sleep(ms);
         }
         else if (x % 2 == 0) {
             x = x / 2;
@@ -62,7 +62,10 @@ int main()
         cout << "Do you want, 1: for the program to run automatically, or 2: allow you to input a number and it to calculate it in 3x+1, type 1 for 1 and 2 for 2\n";
         cin >> choice;
         if (choice == 1) {
-            automatic_input();
+            int time;
+            cout << "How long do you want the program to wait between numbers (ms)?\n";
+            cin >> time;
+            automatic_input(time);
         }
         else if (choice == 2) {
             while (true) {
