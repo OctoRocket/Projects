@@ -1,5 +1,5 @@
 #include <iostream>
-#include "infint.h"
+#include "../dependencies/infint.h"
 using namespace std;
 
 void fib()
