@@ -21,6 +21,7 @@ class test:
 
     def print_cagas(self):
         print(self.cagas)
+        return self.cagas
 
 
 t = test()
