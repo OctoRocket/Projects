@@ -1,7 +1,7 @@
 x = 1
-while True:
+for i in range(150000):
     try:
-	    print(chr(x))
+        print(chr(x))
     except:
         pass
     x = x + 1
