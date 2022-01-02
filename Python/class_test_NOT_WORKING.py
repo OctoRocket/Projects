@@ -1,19 +1,36 @@
+from random import randint, seed
+from datetime import datetime
+
+
+seed(datetime.utcnow())
+print(datetime.utcnow())
+print(randint(1, 10))
+print(randint(1, 10))
+
+
 class test:
-    def __init__(self, test):
-        print(test)
+    def __init__(self):
+        self.cagas = randint(1, 100000)
 
-    def set_test(self, test):
+    def set_test(self, jej):
         self.jej = jej
-        return
-
-    def test(self):
         return self.jej
 
+    def return_jej(self):
+        return self.jej
 
-t = test
+    def print_cagas(self):
+        print(self.cagas)
 
-t("Hello world")
-t.set_test(1)
-t.print_test()
-t.set_jej("Hello www")
-t.print_jej()
+
+t = test()
+
+t.set_test(123)
+print(t.return_jej())
+t.set_test("Hello, world!")
+print(t.return_jej())
+t.print_cagas()
+
+t2 = test()
+
+t.print_cagas()
