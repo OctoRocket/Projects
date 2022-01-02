@@ -7,7 +7,7 @@ void fib()
 	InfInt a = 0;
 	InfInt b = 1;
 	InfInt c;
-	while(true)
+	while (true)
 	{
 		cout << b << endl;
 		c = a + b;
@@ -19,7 +19,5 @@ void fib()
 int main()
 {
 	fib();
-	
 	return 0;
 }
-
