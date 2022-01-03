@@ -9,7 +9,7 @@ bool prime(unsigned long long n)
     }
     for (unsigned long long i = 2; i < n; i++)
     {
-        if (n % i != 0)
+        if (n % i == 0)
         {
             return false;
         }
@@ -23,17 +23,9 @@ int main()
     while (true)
     {
         bool x = prime(i);
-        if (i > 100)
-        {
-            return 0;
-        }
         if (x == true)
         {
-            cout << "Prime: " << i << endl;
-        }
-        else
-        {
-            cout << "Not prime: " << i << endl;
+            cout << i << " ";
         }
         i++;
     }
