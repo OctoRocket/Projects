@@ -16,7 +16,7 @@ void automatic_input(int ms)
     unsigned long long iterations = 0;
     while (true) {
         if (x == 1) {
-            cout << "Done, with " << iterations << " iterations needed to get to one and the number was " << number << "\n\n\n\n";
+            cout << "Done, with " << iterations << " iterations needed to get to 1 and the number was " << number << "\n\n\n\n";
             number++;
             x = number;
             iterations = 0;

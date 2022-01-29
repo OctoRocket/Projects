@@ -20,9 +20,9 @@ int three_x_plus_one(int num)
 
 void fib(int limit) {
     cout << "Enter how many numbers of the fibonacci sequence you want to print out.\n";
-    int a = 0;
-    int b = 1;
-    int c;
+    unsigned long long a = 0;
+    unsigned long long b = 1;
+    unsigned long long c;
     for (int i = 0; i < limit; i++) {
         cout << b << "\n";
         c = a + b;
