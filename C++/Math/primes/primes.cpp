@@ -26,8 +26,8 @@ vector<int> prime(int limit)
 
 int main()
 {
-    int inp = 1000000;
-    // cin >> inp;
+    int inp;
+    cin >> inp;
     vector<int> primes = prime(inp);
     for (int i = 0; i < primes.size(); i++) {
         if (i != primes.size() - 1) {
