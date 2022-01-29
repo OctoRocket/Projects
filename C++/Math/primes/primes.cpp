@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-vector<int> prime(int limit)
+vector<int> prime(int limit, bool debug)
 {
     bool found;
     vector<int> prime_list = {2};
@@ -18,6 +18,9 @@ vector<int> prime(int limit)
         }
         if (found) {
             prime_list.push_back(i);
+            if (debug) {
+                cout << i << "\n";
+            }
         }
     }
     return prime_list;
@@ -26,9 +29,17 @@ vector<int> prime(int limit)
 
 int main()
 {
+    bool en_debug = false;
+    string debug;
+    cout << "Do you want debug info? (y/n)\n";
+    cin >> debug;
+    if (debug == "y") {
+        en_debug = true;
+    }
     int inp;
+    cout << "Enter limit for the prime search:\n";
     cin >> inp;
-    vector<int> primes = prime(inp);
+    vector<int> primes = prime(inp, en_debug);
     for (int i = 0; i < primes.size(); i++) {
         if (i != primes.size() - 1) {
             cout << primes[i] << ", ";
