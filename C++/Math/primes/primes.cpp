@@ -1,33 +1,40 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-bool prime(unsigned long long n)
+vector<int> prime(int limit)
 {
-    if (n == 1)
-    {
-        return false;
-    }
-    for (unsigned long long i = 2; i < n; i++)
-    {
-        if (n % i == 0)
-        {
-            return false;
+    bool found;
+    vector<int> prime_list = {2};
+    for (int i = 2; i < limit+1; i++) {
+        for (int j = 0; j < prime_list.size()/2 + 1; j++) {
+            if (i % prime_list[j] == 0 or i == prime_list[j]) {
+                found = false;
+                break;
+            }
+            else {
+                found = true;
+            }
+        }
+        if (found) {
+            prime_list.push_back(i);
         }
     }
-    return true;
+    return prime_list;
 }
+
 
 int main()
 {
-    unsigned long long i = 1;
-    while (true)
-    {
-        bool x = prime(i);
-        if (x == true)
-        {
-            cout << i << " ";
+    int inp = 1000000;
+    // cin >> inp;
+    vector<int> primes = prime(inp);
+    for (int i = 0; i < primes.size(); i++) {
+        if (i != primes.size() - 1) {
+            cout << primes[i] << ", ";
         }
-        i++;
+        else {
+            cout << primes[i] << "\n";
+        }
     }
-    return 0;
 }
