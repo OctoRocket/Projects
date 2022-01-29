@@ -2,7 +2,7 @@
 #include <cmath>
 using namespace std;
 
-double* quadratic(double a, double b, double c){
+double* quadratic(double a, double b, double c) {
   double x=(-b+sqrt(pow(b, 2)-4*a*c))/2*a;
   double y=(-b-sqrt(pow(b, 2)-4*a*c))/2*a;
   static double arr[2] = {x, y};
