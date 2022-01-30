@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 int three_x_plus_one(int num)
@@ -29,12 +30,22 @@ void fib(int limit) {
     }
 }
 
+vector<int> perfect_square(int limit) {
+    int c = 1;
+    vector<int> p_squares;
+    while (c*c <= limit) {
+        p_squares.push_back(c*c);
+        c++;
+    }
+    return p_squares;
+}
+
 int main()
 {
     bool use = true;
     while (use) {
         int inp;
-        cout << "1 is for 3x+1, 2 is for fib.\n";
+        cout << "1 is for 3x+1, 2 is for fib, 3 is for perfect square.\n";
         cin >> inp;
         if (inp == 1) {
             cout << "Enter a number to see how long it takes to reach 1.\n";
@@ -48,10 +59,24 @@ int main()
             cin >> num;
             fib(num);
         }
-        string use_deter;
+        else if (inp == 3) {
+            cout << "What number should be the maximum value?\n";
+            int num;
+            cin >> num;
+            vector<int> p_squares = perfect_square(num);
+            for (int i = 0; i < p_squares.size(); i++) {
+                if (i == p_squares.size() - 1) {
+                    cout << p_squares[i] << "\n";
+                }
+                else {
+                    cout << p_squares[i] << ", ";
+                }
+            }
+        }
+        string use_determine;
         cout << "Do you want to use this program again? (y/n)\n";
-        cin >> use_deter;
-        if (use_deter != "y") {
+        cin >> use_determine;
+        if (use_determine != "y") {
             break;
         }
     }
