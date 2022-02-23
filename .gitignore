@@ -5,3 +5,4 @@
 Github/
 *.o
 *.bin
+target/
