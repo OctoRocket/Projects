@@ -1,14 +1,16 @@
+use num::BigUint;
+use num::{Zero, One};
 use std::io;
 
-fn fib(len: u32) -> Vec<u128> {
+fn fib(len: u32) -> Vec<BigUint> {
     println!();
-    let mut a: u128 = 0;
-    let mut b: u128 = 1;
-    let mut c: u128;
-    let mut vec: Vec<u128> = Vec::new();
+    let mut a: BigUint = Zero::zero();
+    let mut b: BigUint = One::one();
+    let mut c: BigUint;
+    let mut vec: Vec<BigUint> = Vec::new();
     for _n in 1..=len {
-        vec.push(b);
-        c = a + b;
+        vec.push(b.clone());
+        c = a + b.clone();
         a = b;
         b = c;
     }
