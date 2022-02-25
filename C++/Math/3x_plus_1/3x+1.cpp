@@ -55,6 +55,7 @@ void manual_input(unsigned long long x)
         sleep(100);
     }
 }
+
 int main()
 {
     while (true) {
