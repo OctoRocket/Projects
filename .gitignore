@@ -7,3 +7,4 @@ Github/
 *.bin
 target/
 Cargo.lock
+.vscode
