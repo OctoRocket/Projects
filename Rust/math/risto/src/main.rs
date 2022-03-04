@@ -8,6 +8,7 @@ fn main() {
         .expect("Failed to read line");
     let mut num = num.trim().parse::<i32>().expect("Failed to parse");
     let mut iter = 0;
+    let mut vec:Vec<i32> = Vec::new();
     loop {
         // Target is to reach 0
         if num == 0 {
@@ -26,6 +27,13 @@ fn main() {
         println!("num: {}, rev_num: {}", num, rev_num);
         num = num - rev_num;
         iter += 1;
+        for i in vec.clone() {
+            if num == i {
+                println!("Loop detected at iteration {}!", iter);
+                return;
+            }
+        }
+        vec.push(num);
     }
     // print out how many iterations it took to get to 0
     println!("\n{}", iter);
