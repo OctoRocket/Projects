@@ -17,7 +17,7 @@ fn main() {
         // convert the int into a string then reverse it
         let mut temp = num.to_string().chars().rev().collect::<String>();
         // fix negitive issues
-        if temp.chars().rev().next() == Some('-') {
+        if num < 0 {
             temp.pop();
             temp.insert(0, '-');
         }
@@ -27,9 +27,10 @@ fn main() {
         println!("num: {}, rev_num: {}", num, rev_num);
         num = num - rev_num;
         iter += 1;
-        for i in vec.clone() {
-            if num == i {
-                println!("Loop detected at iteration {}!", iter);
+        // detect if there is a loop
+        for i in &mut vec {
+            if num == *i {
+                println!("Loop detected at iteration {}! Number: {}", iter, num);
                 return;
             }
         }
