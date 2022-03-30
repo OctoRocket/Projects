@@ -17,7 +17,7 @@ fn main() {
         }
     }
     if vec.len() != 2 {
-        for _i in (vec.len() as f32/2.0).ceil() as u32 + 1..vec.len() as u32 {
+        for _i in vec.len() / 2 + 1..vec.len() {
             vec.pop();
         }
     }
