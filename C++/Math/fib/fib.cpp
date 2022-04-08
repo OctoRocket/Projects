@@ -1,12 +1,11 @@
 #include <iostream>
-#include "../../dependencies/infint.h"
 using namespace std;
 
 void fib()
 {
-	InfInt a = 0;
-	InfInt b = 1;
-	InfInt c;
+	unsigned long long a = 0;
+	unsigned long long b = 1;
+	unsigned long long c;
 	while (true)
 	{
 		cout << b << endl;
