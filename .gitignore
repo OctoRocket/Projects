@@ -8,3 +8,5 @@ Github/
 target/
 Cargo.lock
 .vscode
+*.log
+
