@@ -16,16 +16,43 @@ fn links_on_website(website: String) -> Vec<String> {
         // add the link to the list
         links.push(link.to_string());
     }
-    // replace first / with website/link
-    let links = links.iter_mut().map(|link| {
+    // replace first / with website/link and also fix other nonsense
+    let mut new_links = Vec::new();
+    for link in links {
         if link.starts_with('/') {
-            *link = website.clone().trim().to_owned()+link;
-            link.to_string()
+            new_links.push(website.clone().trim().to_owned()+&link);
+        } else if link.starts_with("./") {
+            new_links.push(website.clone().trim().to_owned()+&link);
+        } else if link.starts_with("../") {
+            let mut trimmed = website.clone().chars().next_back().unwrap().to_string();
+            while trimmed.chars().last().unwrap() != '/' {
+                trimmed = trimmed.chars().next_back().unwrap().to_string();
+            }
+            new_links.push(trimmed.trim().to_owned()+&link);
         } else {
-            link.to_string()
+            new_links.push(link.to_string());
         }
-    }).collect();
-    links
+    }
+    let mut newer_links = Vec::new();
+    for link in new_links.iter_mut() {
+        if link.starts_with("https://") || link.starts_with("http://") {
+            newer_links.push(link.to_string());
+        }
+    }
+    newer_links
+}
+
+fn get_found_links(tree: &Tree) -> Vec<String> {
+    let links = format!("{:?}", tree);
+    let mut found_links = Vec::new();
+    for i in links.match_indices("link: ") {
+        found_links.push(links[i.0..]
+            .split("\", children: ")
+            .map(|s| s
+                .trim_start_matches("link: \"")
+            ).collect::<Vec<&str>>()[0].to_string());
+    }
+    found_links
 }
 
 fn init() -> Tree {
@@ -45,22 +72,26 @@ fn init() -> Tree {
 }
 
 fn main() {
-    let webtree = init();
+    let mut webtree = init();
     loop {
         // get all already found links
-        let links = format!("{:?}", webtree);
-        for i in links.match_indices("link: ") {
-            println!("{}", links[i.0..]
-                .split("\", children: ")
-                .map(|s| s
-                    .trim_start_matches("link: \"")
-                ).collect::<Vec<&str>>()[0]);
-        }
+        let found_links = get_found_links(&webtree);
         // get links of webtree children
-        // let mut vec_of_links = Vec::new();
-        // for i in webtree.children.iter().flatten() {
-        //     vec_of_links.push(links_on_website(i.link.clone()));
-        // }
+        let mut new_children = Vec::new();
+        for i in webtree.children.iter().flatten() {
+            let mut child_children = Vec::new();
+            links_on_website(i.link.clone()).iter().for_each(|s| {
+                if !found_links.contains(&s) {
+                    child_children.push(Tree { link: s.to_owned(), children: None });
+                }
+            });
+            new_children.push(Tree { link: i.link.clone(), children: Some(child_children) });
+        }
+        // add new children to webtree
+        webtree.children = Some(new_children);
         break;
+    }
+    for i in get_found_links(&webtree) {
+        println!("{}", i);
     }
 }
