@@ -71,27 +71,43 @@ fn init() -> Tree {
     webtree
 }
 
+fn get_children(mut webtree: Tree) -> Tree {
+    // get all already found links
+    let found_links = get_found_links(&webtree);
+    // get links of webtree children
+    let mut new_children = Vec::new();
+    for i in webtree.children.iter().flatten() {
+        let mut child_children = Vec::new();
+        links_on_website(i.link.clone()).iter().for_each(|s| {
+            if !found_links.contains(&s) {
+                child_children.push(Tree { link: s.to_owned(), children: None });
+            }
+        });
+        new_children.push(Tree { link: i.link.clone(), children: Some(child_children) });
+    }
+    // add new children to webtree
+    webtree.children = Some(new_children);
+    webtree
+}
+
+fn loop_tree(mut webtree: Tree) -> Tree {
+    let mut new_children = Vec::new();
+    for i in webtree.children.iter().flatten() {
+        if i.children.is_none() {
+            new_children.push(get_children(i.to_owned()));
+            println!("{:?}", get_children(i.to_owned()));
+        } else {
+            new_children.push(i.to_owned());
+        }
+    }
+    webtree.children = Some(new_children);
+    webtree
+}
+
 fn main() {
     let mut webtree = init();
-    loop {
-        // get all already found links
-        let found_links = get_found_links(&webtree);
-        // get links of webtree children
-        let mut new_children = Vec::new();
-        for i in webtree.children.iter().flatten() {
-            let mut child_children = Vec::new();
-            links_on_website(i.link.clone()).iter().for_each(|s| {
-                if !found_links.contains(&s) {
-                    child_children.push(Tree { link: s.to_owned(), children: None });
-                }
-            });
-            new_children.push(Tree { link: i.link.clone(), children: Some(child_children) });
-        }
-        // add new children to webtree
-        webtree.children = Some(new_children);
-        break;
+    for _i in 0..2 {
+        webtree = loop_tree(webtree);
     }
-    for i in get_found_links(&webtree) {
-        println!("{}", i);
-    }
+    println!("{:?}", webtree);
 }
