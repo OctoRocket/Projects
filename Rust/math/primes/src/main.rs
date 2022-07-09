@@ -1,36 +1,36 @@
-use std::io;
-
-fn input() -> u64{
-    let mut inp = String::new();
-    io::stdin().read_line(&mut inp).expect("Failed to read line");
-    let inp = inp.trim().parse::<u64>().expect("Failed to parse"); 
-    inp
+macro_rules! input {
+    () => {{
+            let mut buf = String::new();
+            std::io::stdin().read_line(&mut buf).unwrap();
+            buf.trim().parse().unwrap()
+        }};
 }
 
-fn primes(inp: u64) -> Vec<u64> {
-    let mut prime_list = vec![2u64];
-    let mut failed = false;
-    for i in 2..inp+1 {
-        for q in &prime_list {
-            if i == 1 {
-                break;
-            } else if i % q == 0 {
-                failed = true;
+fn primes_under(limit: u64) -> Vec<u64> {
+    let mut primes = Vec::new();
+    if limit > 2 {
+        primes.push(2);
+    } else {
+        return vec![];
+    }
+    for i in 3..=limit {
+        let mut is_prime = true;
+        for j in &primes {
+            if i%j == 0 {
+                is_prime = false;
                 break;
             }
         }
-        if failed == false {
-            prime_list.push(i);
+        if is_prime == true {
+            primes.push(i);
         }
-        failed = false;
     }
-    prime_list
+    primes
 }
 
 fn main() {
-    let inp = input();
-    for i in primes(inp) {
-        print!("{} ", i);
+    let limit = input!();
+    for i in primes_under(limit) {
+        println!("{}", i);
     }
-    println!();
 }
