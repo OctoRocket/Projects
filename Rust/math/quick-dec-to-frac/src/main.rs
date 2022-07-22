@@ -1,12 +1,12 @@
-fn input() -> f64 {
+fn input() -> String {
     let mut input = String::new();
     std::io::stdin().read_line(&mut input).unwrap();
-    input.trim().parse::<f64>().unwrap()
+    input.trim().to_string()
 }
 
-fn gcd(mut n1: f64, mut n2: f64) -> f64 {
+fn gcd(mut n1: u64, mut n2: u64) -> u64 {
     loop {
-        if n1 == 0.0 || n2 == 0.0 {
+        if n1 == 0 || n2 == 0 {
             if n1 > n2 {
                 return n1;
             } else {
@@ -21,12 +21,18 @@ fn gcd(mut n1: f64, mut n2: f64) -> f64 {
 }
 
 fn main() {
-    let mut input = input();
-    let mut denominator = 1f64;
-    while input.fract() != 0.0 {
-        input *= 10.0;
-        denominator *= 10.0;
+    let input = input();
+    if input.matches(".").count() != 1 {
+        println!("Not a valid decimal");
+        return;
     }
+    let places_after_point = input.split(".").collect::<Vec<&str>>()[1].len() as u32;
+    let input = {
+        let split = input.split(".").collect::<Vec<&str>>();
+        let split = split[0].to_string() + split[1];
+        split.parse::<u64>().unwrap()
+    };
+    let denominator = 10u64.pow(places_after_point);
     let gcd = gcd(input, denominator);
     println!("{}/{}", input/gcd, denominator/gcd);
 }
