@@ -14,5 +14,6 @@ while (json["players"] >= 65):
     time.sleep(15)
     response = requests.get(api_url)
     json = response.json()
+    print(json["players"])
 
 webbrowser.open('https://www.google.com/search?client=firefox-b-1-d&q=join+the+server+now')
