@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <title>Counter</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        .button {
+            background-color: #189967; /* Green */
+            border: none;
+            color: black;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+<div>
+    <h1>Counter</h1>
+    <button class="button" id="button">1</button>
+    <p><a href="/index.html">Back</a></p>
+    <script>
+        const button = document.getElementById("button");
+        
+        var counter = 1;
+        button.addEventListener("click", ()=>{
+            counter += 1;
+            button.innerText = counter;
+        })
+    </script>
+</div>
+</body>
+</html>
