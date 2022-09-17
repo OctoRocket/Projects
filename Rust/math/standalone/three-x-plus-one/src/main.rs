@@ -4,6 +4,7 @@ fn sleep(time: u64) {
     thread::sleep(time::Duration::from_millis(time));
 }
 
+// automatically solve
 fn a_inp(time: u64) {
     let mut b_num: u128 = 1;
     let mut r_num: u128 = 1;
@@ -29,6 +30,8 @@ fn a_inp(time: u64) {
     }
 }
 
+
+// input numbers to try
 fn m_inp(b_num: u128, delay: u64) -> u32 {
     let mut r_num: u128 = b_num;
     let mut iter: u32 = 0;

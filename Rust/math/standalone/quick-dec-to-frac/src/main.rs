@@ -4,6 +4,7 @@ fn input() -> String {
     input.trim().to_string()
 }
 
+// euclidean algormithm
 fn gcd(mut n1: u64, mut n2: u64) -> u64 {
     loop {
         if n1 == 0 || n2 == 0 {
@@ -26,7 +27,9 @@ fn main() {
         println!("Not a valid decimal");
         return;
     }
-    let places_after_point = input.split(".").collect::<Vec<&str>>()[1].len() as u32;
+    // get the number of places after the decimal point (eg. 10.48 is 2) 
+    let places_after_point = input.split(".").nth(1).unwrap().len() as u32;
+    // process the input 
     let input = {
         let split = input.split(".").collect::<Vec<&str>>();
         let split = split[0].to_string() + split[1];

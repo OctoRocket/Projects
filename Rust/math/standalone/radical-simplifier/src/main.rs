@@ -1,6 +1,7 @@
 use integer_sqrt::IntegerSquareRoot;
 use std::io;
 
+// calculate perfect squares
 fn p_squares(limit: u32) -> Vec<u32> {
     let mut i = 1;
     let mut vec: Vec<u32> = Vec::new();
@@ -19,8 +20,10 @@ fn main() {
     let num = num.trim().parse::<u32>().expect("Error NaN");
     let mut ps = p_squares(num);
     let mut cont = true;
+    // sort perfect squares from biggest to smallest and remove the number one
     ps.reverse();
     ps.pop();
+    // for every perfect square, if it devides with no remainder, then check if the number is a perfect square and format it accordingly
     for i in ps {
         if num % i == 0 {
             if num / i == 1 {

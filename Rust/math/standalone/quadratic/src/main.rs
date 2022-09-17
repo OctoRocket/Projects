@@ -11,6 +11,7 @@ fn main() {
     let a = read_line();
     let b = read_line();
     let c = read_line();
+    // quadratic formula
     let x = (-b + ((b * b) - 4.0 * a * c).sqrt()) / 2.0 * a;
     let y = (-b - ((b * b) - 4.0 * a * c).sqrt()) / 2.0 * a;
     println!("{}, {}", x, y);

@@ -1,13 +1,11 @@
-use num::BigUint;
-use num::{Zero, One};
 use std::io;
 
-fn fib(len: u32) -> Vec<BigUint> {
+fn fib(len: u128) -> Vec<u128> {
     println!();
-    let mut a: BigUint = Zero::zero();
-    let mut b: BigUint = One::one();
-    let mut c: BigUint;
-    let mut vec: Vec<BigUint> = Vec::new();
+    let mut a: u128 = 0;
+    let mut b: u128 = 1;
+    let mut c: u128;
+    let mut vec: Vec<u128> = Vec::new();
     for _n in 1..=len {
         vec.push(b.clone());
         c = a + b.clone();
@@ -23,7 +21,7 @@ fn main() {
     io::stdin()
         .read_line(&mut inp)
         .expect("Failed to read line.");
-    let inp = inp.trim().parse::<u32>().expect("Failed to parse");
+    let inp = inp.trim().parse::<u128>().expect("Failed to parse");
     let vec = fib(inp);
     for n in 0..vec.len() {
         if n < vec.len() - 1 {
