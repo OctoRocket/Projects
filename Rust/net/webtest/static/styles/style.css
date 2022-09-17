@@ -1,0 +1,94 @@
+body {
+    background-color: #262638;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+div {
+    width: 1300px;
+    margin: 5em auto;
+    padding: 10em;
+    background-color: #323253;
+    border-radius: 3em;
+    color: rgb(255, 251, 233);
+}
+a:link, a:visited {
+    color: rgb(255, 251, 233);
+    text-decoration: none;
+}
+.button {
+    background-color: #187b99;
+    border: none;
+    color: rgb(255, 251, 233);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    display: inline-block;
+    border-radius: 12px;
+    margin: 4px 4px;
+    cursor: pointer;
+}
+
+ul { 
+  list-style-type:none; /* this removes the bulletpoints */
+  /* there is an annoying left padding in the ul element by default */
+  padding-left:0; /* this removes it */
+}
+  
+li a {
+  display:inline-block; /* this allows us to add margin to each item 
+                           so there's space for it to rotate */
+  margin:10px;
+}
+  
+/* this makes stuff happen when you hover! */
+li a:hover {
+  transform:rotate(5deg); /* play with this 15deg value, works w/ negatives too! */
+  /* more CSS transform options: https://developer.mozilla.org/en-US/docs/Web/CSS/transform */
+}
+tr a {
+    display:inline-block; /* this allows us to add margin to each item 
+                             so there's space for it to rotate */
+    margin:10px;
+}
+  
+  /* this makes stuff happen when you hover! */
+tr a:hover {
+    transform:rotate(5deg); /* play with this 15deg value, works w/ negatives too! */
+    /* more CSS transform options: https://developer.mozilla.org/en-US/docs/Web/CSS/transform */
+}
+
+.loader {
+    --s: 35px; /* the size of the wave */
+    --b: 20px; /* the thickness of the line*/
+    
+    height: calc(2*var(--s));
+    aspect-ratio: 2.5;
+    display: grid;
+    padding: 20px;
+    filter: blur(7px) contrast(20) hue-rotate(20deg);
+    background: #fff;
+    mix-blend-mode: darken;
+  }
+  .loader::before{
+    content: "";
+    background: rgb(51, 51, 51);
+    --_g: calc(-.6*var(--s)), #0000 calc(99% - var(--b)),#000 calc(101% - var(--b)) 99%,#0000 101%;
+    --_r: calc(1.166*var(--s) + var(--b)/2) at left 50%;
+    -webkit-mask:
+      radial-gradient(var(--_r) bottom var(--_g)) 
+        calc(50% - var(--s)) calc(50% - var(--s))/calc(4*var(--s)) calc(2*var(--s)),
+      radial-gradient(var(--_r) top    var(--_g)) 
+        calc(50% + var(--s)) calc(50% + var(--s))/calc(4*var(--s)) calc(2*var(--s));
+    animation: m 1s infinite linear;
+  }
+  @keyframes m {
+    to {
+      -webkit-mask-position: 
+        calc(50% - 5*var(--s)) calc(50% - var(--s)),
+        calc(50% - 3*var(--s)) calc(50% + var(--s))
+    }
+  }
+
