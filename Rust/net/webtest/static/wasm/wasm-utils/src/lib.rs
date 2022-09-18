@@ -1,4 +1,3 @@
-use std::vec;
 use wasm_bindgen::prelude::*;
 use integer_sqrt::IntegerSquareRoot;
 
@@ -31,7 +30,7 @@ fn p_squares(limit: i32) -> Vec<i32> {
 #[wasm_bindgen]
 pub fn factors(n: i32) -> String {
     let range = (1..n).filter(|x| n % x == 0);
-    let mut vec = vec!["\n".to_string()];
+    let mut vec = Vec::new();
     // format it correctly
     for i in range {
         if n % i == 0 {
@@ -56,7 +55,7 @@ pub fn factors(n: i32) -> String {
 pub fn primes(limit: i32) -> String {
     let mut primes = Vec::new();
     // input 2 as the first prime, otherwise there are no primes
-    if limit > 2 {
+    if limit >= 2 {
         primes.push(2);
     } else {
         return "".to_string();
@@ -88,7 +87,7 @@ pub fn primes(limit: i32) -> String {
 #[wasm_bindgen]
 pub fn dec_to_frac(input: String) -> String {
     if input.matches(".").count() != 1 {
-        return "Not a valid decimal".to_string();
+        return "".to_string();
     }
     // get the number of places after the decimal point (eg. 10.48 is 2) 
     let places_after_point = input.split(".").nth(1).unwrap().len() as u32;
@@ -114,11 +113,45 @@ pub fn radical_simplifier(num: i32) -> String {
     for i in ps {
         if num % i == 0 {
             if num / i == 1 {
-                return format!("\n{}", num.integer_sqrt());
+                return format!("{}", num.integer_sqrt());
             } else {
-                return format!("\n{}√{}", &i.integer_sqrt(), num / i);
+                return format!("{}√{}", &i.integer_sqrt(), num / i);
             }
         }
     }
-    return format!("\n√{}", num);
+    return format!("√{}", num);
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn factor_test() {
+        assert_eq!(crate::factors(8), "8*1|4*2");
+        assert_eq!(crate::factors(16), "16*1|8*2|4*4");
+        assert_eq!(crate::factors(182), "182*1|91*2|26*7|14*13");
+    }
+
+    #[test]
+    fn prime_test() {
+        assert_eq!(crate::primes(1), "");
+        assert_eq!(crate::primes(2), "2");
+        assert_eq!(crate::primes(10), "2|3|5|7");
+        assert_eq!(crate::primes(25), "2|3|5|7|11|13|17|19|23");
+        assert_eq!(crate::primes(97), "2|3|5|7|11|13|17|19|23|29|31|37|41|43|47|53|59|61|67|71|73|79|83|89|97")
+    }
+
+    #[test]
+    fn dec_to_frac_test() {
+        assert_eq!(crate::dec_to_frac("1".to_string()), "");
+        assert_eq!(crate::dec_to_frac("0.125".to_string()), "1/8");
+        assert_eq!(crate::dec_to_frac("1.625".to_string()), "13/8");
+    }
+
+    #[test]
+    fn radical_simplifier_test() {
+        assert_eq!(crate::radical_simplifier(9), "3");
+        assert_eq!(crate::radical_simplifier(16), "4");
+        assert_eq!(crate::radical_simplifier(12), "2√3");
+        assert_eq!(crate::radical_simplifier(17), "√17");
+    }
 }

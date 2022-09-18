@@ -20,8 +20,15 @@ fn main() {
         }
     }
     // remove half of the list, as half of it will just be the flipped version of the other half (eg. 9*2 and 2*9)
+    let flip = {
+        if vec.len() % 2 == 1 {
+            1
+        } else {
+            0
+        }
+    };
     if vec.len() != 2 {
-        for _i in vec.len() / 2 + 1..vec.len() {
+        for _i in vec.len() / 2 + 1..vec.len() - flip {
             vec.pop();
         }
     }

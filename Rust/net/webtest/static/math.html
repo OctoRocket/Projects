@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+    <title>Funny test website</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/style.css"/>
+</head>
+
+<body>
+<div>
+    <script type="module">
+        import init, {dec_to_frac} from "./wasm/wasm-utils/pkg/wasm_utils.js";
+        await init();
+        
+        async function test() {
+            console.log(dec_to_frac(0.125));
+        }
+        
+        test()
+        </script>
+
+    <label id="label">Test</label>
+    <button class="button" onclick="test()">Click</button>
+</div>
+</body>
+</html>
