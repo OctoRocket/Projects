@@ -87,7 +87,7 @@ pub fn primes(limit: i32) -> String {
 #[wasm_bindgen]
 pub fn dec_to_frac(input: String) -> String {
     if input.matches(".").count() != 1 {
-        return "".to_string();
+        return "Not a decimal".to_string();
     }
     // get the number of places after the decimal point (eg. 10.48 is 2) 
     let places_after_point = input.split(".").nth(1).unwrap().len() as u32;
@@ -142,7 +142,7 @@ mod tests {
 
     #[test]
     fn dec_to_frac_test() {
-        assert_eq!(crate::dec_to_frac("1".to_string()), "");
+        assert_eq!(crate::dec_to_frac("1".to_string()), "Not a decimal");
         assert_eq!(crate::dec_to_frac("0.125".to_string()), "1/8");
         assert_eq!(crate::dec_to_frac("1.625".to_string()), "13/8");
     }

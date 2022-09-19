@@ -10,20 +10,39 @@
 </head>
 
 <body>
-<div>
     <script type="module">
         import init, {dec_to_frac} from "./wasm/wasm-utils/pkg/wasm_utils.js";
         await init();
-        
-        async function test() {
-            console.log(dec_to_frac(0.125));
-        }
-        
-        test()
-        </script>
 
-    <label id="label">Test</label>
-    <button class="button" onclick="test()">Click</button>
-</div>
+        function decode_array(string) {
+            return string.split("|");
+        }
+
+        async function run_dec_to_frac(dec) {
+            var solution = dec_to_frac(dec)
+            console.log(solution);
+            document.getElementById("dec-result").innerHTML = "Result: " + solution;
+        }
+
+        document.getElementById("dec-to-frac-button").onclick=async ()=>{
+            await run_dec_to_frac(document.getElementById("dec").value);
+        }
+    </script>
+    <tr>
+        <div>
+            Factor finder: <input type="number" name="Factor" id="factor"><br>
+            <tr>
+                <button class="button" id="factor-button">Go!</button>
+                <label id="factor-result"></label>
+            </tr>
+        </div>
+        <div>
+            Decimal to fraction converter: <input type="string" name="Decimal" id="dec"><br>
+            <tr>
+                <button class="button" id="dec-to-frac-button">Go!</button>
+                <label id="dec-result"></label>
+            </tr>
+        </div>
+    </tr>
 </body>
 </html>
