@@ -10,7 +10,7 @@ fn index() -> Redirect {
 
 #[get("/<file..>")]
 async fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join(file)).await.ok()
+    NamedFile::open(Path::new("www/").join(file)).await.ok()
 }
 
 #[launch]
