@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 // simple input function
 fn get_inp() -> i64 {
@@ -9,6 +9,7 @@ fn get_inp() -> i64 {
 
 fn main() {
     print!("Input a number: ");
+    io::stdout().flush().unwrap();
     let n = get_inp();
     // get a range of numbers from 1 to n, then filter it so that only factors remain
     let range = (1..n).filter(|x| n % x == 0);
