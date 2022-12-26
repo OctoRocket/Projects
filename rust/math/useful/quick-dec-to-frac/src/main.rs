@@ -13,25 +13,25 @@ fn gcd(mut n1: u64, mut n2: u64) -> u64 {
             } else {
                 return n2;
             }
-        } else if n1 > n2 || n1 == n2 {
-            n1 = n1 % n2;
+        } else if n1 >= n2 {
+            n1 %= n2;
         } else if n2 > n1 {
-            n2 = n2 % n1;
+            n2 %= n1;
         }
     };
 }
 
 fn main() {
     let input = input();
-    if input.matches(".").count() != 1 {
+    if input.matches('.').count() != 1 {
         println!("Not a valid decimal");
         return;
     }
     // get the number of places after the decimal point (eg. 10.48 is 2) 
-    let places_after_point = input.split(".").nth(1).unwrap().len() as u32;
+    let places_after_point = input.split('.').nth(1).unwrap().len() as u32;
     // process the input 
     let input = {
-        let split = input.split(".").collect::<Vec<&str>>();
+        let split = input.split('.').collect::<Vec<&str>>();
         let split = split[0].to_string() + split[1];
         split.parse::<u64>().unwrap()
     };
