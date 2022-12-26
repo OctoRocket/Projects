@@ -22,7 +22,7 @@ fn primes_under(limit: u64) -> Vec<u64> {
                 break;
             }
         }
-        if is_prime == true {
+        if is_prime {
             primes.push(i);
         }
     }
