@@ -17,7 +17,7 @@ fn main() {
     let input: Vec<u32> = {
         let mut inp = String::new();
         stdin().read_line(&mut inp).unwrap();
-        inp.trim().split(":").map(|f| f.parse().unwrap()).collect()
+        inp.trim().split(':').map(|f| f.parse().unwrap()).collect()
     };
     let mut perfects = perfects(input[0], input[1]);
     perfects.reverse();
