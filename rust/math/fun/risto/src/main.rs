@@ -25,7 +25,7 @@ fn main() {
         let rev_num = temp.parse::<i32>().expect("Failed to parse");
         // if it was negitive, return the negitive symbols
         println!("num: {}, rev_num: {}", num, rev_num);
-        num = num - rev_num;
+        num -= rev_num;
         iter += 1;
         // detect if there is a loop
         for i in &mut vec {
