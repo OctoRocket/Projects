@@ -10,7 +10,7 @@ response = requests.get(api_url)
 print(response.status_code)
 json = response.json()
 
-while (json["players"] >= 65):
+while (json["players"] >= 75):
     time.sleep(15)
     response = requests.get(api_url)
     json = response.json()
