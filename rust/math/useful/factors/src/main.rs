@@ -1,5 +1,4 @@
 fn main() {
-    print!("Input a number: ");
     let n = match std::env::args().collect::<Vec<String>>()[1].parse() {
         Ok(x) => x,
         Err(e) => {
