@@ -1,16 +1,12 @@
-use std::io::{self, Write};
-
-// simple input function
-fn get_inp() -> i64 {
-    let mut inp = String::new();
-    io::stdin().read_line(&mut inp).expect("Failed to read line");
-    inp.trim().parse::<i64>().expect("Failed to parse input")
-}
-
 fn main() {
     print!("Input a number: ");
-    io::stdout().flush().unwrap();
-    let n = get_inp();
+    let n = match std::env::args().collect::<Vec<String>>()[1].parse() {
+        Ok(x) => x,
+        Err(e) => {
+            println!("Failed to parse, is your input a positve number? ({})", e);
+            return;
+        }
+    };
     // get a range of numbers from 1 to n, then filter it so that only factors remain
     let range = (1..n).filter(|x| n % x == 0);
     let mut vec = vec!["\n".to_string()];
