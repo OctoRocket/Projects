@@ -6,7 +6,11 @@ use atmega_hal::{
     pins,
     Peripherals,
     delay::Delay,
-    I2c, prelude::{_embedded_hal_blocking_i2c_Write, _embedded_hal_blocking_delay_DelayMs},
+    I2c,
+    prelude::{
+        _embedded_hal_blocking_i2c_Write, 
+        _embedded_hal_blocking_delay_DelayMs,
+    },
 };
 
 #[lang = "eh_personality"]
@@ -78,7 +82,7 @@ pub extern fn main() {
         dp.TWI,
         pins.pc4,
         pins.pc5,
-        200000,
+        400000,
     );
     let number = num_to_display(123);
 
@@ -87,9 +91,8 @@ pub extern fn main() {
     loop {
         for i in 0..=3 {
             i2c.write(addr, &[2, number_to_position(i), number[i as usize]]).unwrap();
+            delay.delay_ms(1u16);
+            i2c.write(addr, &[2, 0b00001111u8, 0b00000000u8]).unwrap();
         }
-        delay.delay_ms(5u16);
-        i2c.write(addr, &[2, 0b00001111u8, 0b00000000u8]).unwrap();
-        delay.delay_ms(10u16);
     }
 }
