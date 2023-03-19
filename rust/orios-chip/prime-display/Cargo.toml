@@ -1,0 +1,18 @@
+[package]
+name = "prime-display"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+atmega-hal = { git = "https://github.com/Rahix/avr-hal", features = ["atmega328p"] }
+ufmt = "0.2.0"
+embedded-hal = "0.2.7"
+
+[profile.dev]
+lto = true
+
+[profile.release]
+lto = true
+strip = true
