@@ -84,15 +84,23 @@ pub extern fn main() {
         pins.pc5,
         400000,
     );
-    let number = num_to_display(123);
+    let mut num = 1;
+    let mut conv_num = num_to_display(num);
+    let mut count = 0;
 
     i2c.write(addr, &[6, 0b00000001, 0b00000000]).unwrap();
 
     loop {
         for i in 0..=3 {
-            i2c.write(addr, &[2, number_to_position(i), number[i as usize]]).unwrap();
+            i2c.write(addr, &[2, number_to_position(i), conv_num[i as usize]]).unwrap();
             delay.delay_ms(1u16);
             i2c.write(addr, &[2, 0b00001111u8, 0b00000000u8]).unwrap();
+        }
+        count += 1;
+        if count == 1000 {
+            count = 0;
+            num += 1;
+            conv_num = num_to_display(num);
         }
     }
 }
