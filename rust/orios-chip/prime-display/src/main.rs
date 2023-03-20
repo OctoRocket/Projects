@@ -23,9 +23,34 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 
 pub type SystemClock = atmega_hal::clock::MHz16;
 
+fn primes_under(limit: u16) -> Option<[u16; 1229]> {
+    let mut primes = [0u16; 1229];
+    let mut index = 0;
+    // input 2 as the first prime, otherwise there are no primes
+    if limit < 2 {
+        return None;
+    }
+    // from 3 (first number above the first prime) to the limit
+    for i in 2..=limit {
+        let mut is_prime = true;
+        // if the number is divisable a prime number before it, then it is not prime.
+        for j in primes {
+            if i % j == 0 {
+                is_prime = false;
+                break;
+            }
+        }
+        if is_prime {
+            primes[index] = i;
+            index += 1
+        }
+    }
+    Some(primes)
+}
+
 fn number_to_chars(mut num: u16) -> [u8; 4] {
     let mut char_array = [48u8; 4];
-    if num > 9999 || num < 1 {
+    if !(1..=9999).contains(&num) {
         return [0; 4];
     }
     let num_len = num.checked_ilog10().unwrap_or(0) + 1;
@@ -38,7 +63,7 @@ fn number_to_chars(mut num: u16) -> [u8; 4] {
 
 fn num_to_display(num: u16) -> [u8; 4] {
     let chars = number_to_chars(num);
-    let converted_chars = chars.map(|f|
+    chars.map(|f|
         match f as char {
             '0' => 0b00111111u8,
             '1' => 0b00000110u8,
@@ -52,8 +77,7 @@ fn num_to_display(num: u16) -> [u8; 4] {
             '9' => 0b01100111u8,
             _ => 0b00000000u8
         }
-    );
-    converted_chars
+    )
 }
 
 fn number_to_position(num: u8) -> u8 {
@@ -71,11 +95,11 @@ pub extern fn main() {
     let mut delay: Delay<SystemClock> = Delay::new();
     let dp = Peripherals::take().unwrap();
     let pins = pins!(dp);
-    let addr = 0b0100_000_1u8 >> 1;
-    /*               |--| |-| |
-        Fixed bits --|--|  |  |
-        Programable bits --|  |
-        RW bit ---------------|
+    let addr = 0b0100_0001u8 >> 1;
+    /*               |--| |-||
+        Fixed bits --|--|  | |
+        Programable bits --| |
+        RW bit --------------|
     */
     
     let mut i2c: I2c<SystemClock> = I2c::with_external_pullup(
@@ -84,8 +108,9 @@ pub extern fn main() {
         pins.pc5,
         400000,
     );
-    let mut num = 1;
-    let mut conv_num = num_to_display(num);
+    let mut index = 0;
+    let primes = primes_under(9999).unwrap();
+    let mut conv_num = num_to_display(primes[index]);
     let mut count = 0;
 
     i2c.write(addr, &[6, 0b00000001, 0b00000000]).unwrap();
@@ -99,8 +124,8 @@ pub extern fn main() {
         count += 1;
         if count == 1000 {
             count = 0;
-            num += 1;
-            conv_num = num_to_display(num);
+            index += 1;
+            conv_num = num_to_display(primes[index]);
         }
     }
 }
