@@ -1,24 +1,13 @@
-fn longest_common_prefix(mut strs: Vec<String>) -> String {
-        strs.sort_unstable_by_key(|s| s.len());
-        let mut solution = String::new();
-        for i in 0  ..strs[0].len() {
-            if strs
-                .iter()
-                .all(|s| s.chars().nth(i) == strs[0].chars().nth(i))
-            {
-                solution.push(strs[0].chars().nth(i).unwrap());
-            } else {
-                break;
-            }
-        }
-        solution
+fn longest_common_prefix(strs: &[&str]) -> String {
+    let mut i = 0;
+    while !strs.iter().any(|f| f.chars().nth(i) != strs[0].chars().nth(i)) {
+        i += 1;
+    }
+    String::from(&strs[0][0..i])
 }
 
 fn main() {
-    println!(
-        "{}",
-        longest_common_prefix(Vec::from(
-            ["flower", "flow", "flight"].map(String::from)
-        ))
-    );
+    for _i in 1..=1000000 {
+        longest_common_prefix(&["flower", "flowest", "flowing"]);
+    }
 }
