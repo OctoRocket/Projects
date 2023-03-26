@@ -7,45 +7,42 @@ use atmega_hal::{
     Peripherals,
     delay::Delay,
     I2c,
-    prelude::{
-        _embedded_hal_blocking_i2c_Write, 
-        _embedded_hal_blocking_delay_DelayMs,
-    },
+    Usart, 
+    usart::Baudrate, 
+    prelude::*,
 };
+use ufmt::uwrite;
 
 #[lang = "eh_personality"]
 extern "C" fn eh_personality() {}
 
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo) -> ! {
+    let dp = Peripherals::take().unwrap();
+    let pins = pins!(dp);
+    let mut usart = Usart::new(
+        dp.USART0,
+        pins.pd0,
+        pins.pd1.into_output(),
+        Baudrate::<SystemClock>::from(115200),
+    );
+    ufmt::uwriteln!(&mut usart, "Panik! idk why (haven't set this up yet)").unwrap();
     loop {}
 }
 
 pub type SystemClock = atmega_hal::clock::MHz16;
 
-fn primes_under(limit: u16) -> Option<[u16; 1229]> {
-    let mut primes = [0u16; 1229];
-    let mut index = 0;
-    // input 2 as the first prime, otherwise there are no primes
-    if limit < 2 {
-        return None;
+fn check_if_prime(num: u16) -> bool {
+    if num < 2 {
+        return false;
     }
-    // from 3 (first number above the first prime) to the limit
-    for i in 2..=limit {
-        let mut is_prime = true;
-        // if the number is divisable a prime number before it, then it is not prime.
-        for j in primes {
-            if i % j == 0 {
-                is_prime = false;
-                break;
-            }
-        }
-        if is_prime {
-            primes[index] = i;
-            index += 1
-        }
+    if num < 4 {
+        return true;
     }
-    Some(primes)
+    if !(2..num/2).any(|f| num % f == 0) {
+        return true;
+    }
+    false
 }
 
 fn number_to_chars(mut num: u16) -> [u8; 4] {
@@ -61,7 +58,7 @@ fn number_to_chars(mut num: u16) -> [u8; 4] {
     char_array
 }
 
-fn num_to_display(num: u16) -> [u8; 4] {
+fn number_to_display(num: u16) -> [u8; 4] {
     let chars = number_to_chars(num);
     chars.map(|f|
         match f as char {
@@ -102,30 +99,44 @@ pub extern fn main() {
         RW bit --------------|
     */
     
+    let mut usart = Usart::new(
+        dp.USART0,
+        pins.pd0,
+        pins.pd1.into_output(),
+        Baudrate::<SystemClock>::from(115200),
+    );
+    
+    uwrite!(&mut usart, "Initializing i2c\r\n").unwrap();
+    Usart::flush(&mut usart);
+
     let mut i2c: I2c<SystemClock> = I2c::with_external_pullup(
         dp.TWI,
         pins.pc4,
         pins.pc5,
         400000,
     );
-    let mut index = 0;
-    let primes = primes_under(9999).unwrap();
-    let mut conv_num = num_to_display(primes[index]);
+
+    let mut number = 2;
     let mut count = 0;
 
     i2c.write(addr, &[6, 0b00000001, 0b00000000]).unwrap();
 
+    uwrite!(&mut usart, "Begining loop\r\n").unwrap();
+    Usart::flush(&mut usart);
+
     loop {
         for i in 0..=3 {
-            i2c.write(addr, &[2, number_to_position(i), conv_num[i as usize]]).unwrap();
+            i2c.write(addr, &[2, number_to_position(i), number_to_display(number)[i as usize]]).unwrap();
             delay.delay_ms(1u16);
             i2c.write(addr, &[2, 0b00001111u8, 0b00000000u8]).unwrap();
         }
         count += 1;
         if count == 1000 {
             count = 0;
-            index += 1;
-            conv_num = num_to_display(primes[index]);
+            number += 1;
+            while !check_if_prime(number) {
+                number += 1;
+            }
         }
     }
 }
