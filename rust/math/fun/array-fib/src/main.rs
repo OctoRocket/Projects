@@ -1,8 +1,5 @@
 fn fib_increment(array: &[u128; 2]) -> Option<[u128; 2]> {
-    Some([array[1], match array[0].checked_add(array[1]) {
-        Some(value) => value,
-        None => return None,
-    }])
+    Some([array[1], array[0].checked_add(array[1])?])
 }
 
 fn main() {
