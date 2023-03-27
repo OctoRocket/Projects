@@ -52,6 +52,7 @@ fn m_inp(b_num: u128, delay: u64) -> u32 {
 }
 
 fn main() {
+    // Ask the user if they want to automatically calculate the iterations or manually do it
     println!("1 for automatic input, 2 for manual input, 0 for exit: ");
     let mut inp = String::new();
     io::stdin()
@@ -59,6 +60,7 @@ fn main() {
         .expect("Failed to read line");
     let inp = inp.trim().parse::<u16>().expect("Failed to parse");
     if inp == 1 {
+        // Ask the user for the delay between outputs
         let mut inp = String::new();
         println!("Enter delay between outputs (MS): ");
         io::stdin()
@@ -67,6 +69,7 @@ fn main() {
         let inp = inp.trim().parse::<u64>().expect("Failed to parse");
         a_inp(inp);
     } else if inp == 2 {
+        // Ask the user for the delay between iterations
         let mut inp = String::new();
         println!("How long of a delay between iterations do you want? (MS)");
         io::stdin()
@@ -74,6 +77,7 @@ fn main() {
             .expect("Failed to read line");
         let delay = inp.trim().parse::<u64>().expect("Failed to parse");
         loop {
+            // Ask the user for the number to calculate
             let mut inp = String::new();
             println!("What number do you want to calculate? (0 to exit)");
             io::stdin()
