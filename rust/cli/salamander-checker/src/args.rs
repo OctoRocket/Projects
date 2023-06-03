@@ -11,6 +11,6 @@ use clap::Parser;
 )]
 pub struct Args {
     /// Link to watch the player count of.
-    #[arg(short, long, default_value = "https://lizard.spacestation14.io/salamander")]
+    #[arg(short, long, default_value = "https://lizard.spacestation14.io/salamander/status")]
     pub link: String,
 }

@@ -10,7 +10,7 @@ use std::{
 
 fn main() {
     let args = Args::parse();
-    let link = args.link + "/server/status";
+    let link = args.link;
     println!("Watching link: {}", link);
 
     loop {
