@@ -1,13 +1,13 @@
-use reqwest;
-use serde;
+use serde::Deserialize;
+use reqwest::blocking::get;
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 struct PlayerCount {
     players: u32,
 }
 
 pub fn get_player_count(link: &String) -> Result<u32, reqwest::Error> {
-    let body = reqwest::blocking::get(link).unwrap().json::<PlayerCount>().unwrap();
+    let body = get(link).unwrap().json::<PlayerCount>().unwrap();
     
     Ok(body.players)
 }
