@@ -1,4 +1,4 @@
-use std::io::{stdin, stdout, Write};
+use std::io::stdin;
 
 fn perfects(limit: u32, degree: u32) -> Vec<u32> {
     let mut perfects = Vec::new();
@@ -12,8 +12,6 @@ fn perfects(limit: u32, degree: u32) -> Vec<u32> {
 
 fn main() {
     println!("Input radical and degree in format (inside of radical):(degree)");
-    print!("> ");
-    stdout().flush().unwrap();
     let input: Vec<u32> = {
         let mut inp = String::new();
         stdin().read_line(&mut inp).unwrap();
