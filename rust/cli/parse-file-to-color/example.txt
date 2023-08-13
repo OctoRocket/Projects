@@ -1,0 +1,6 @@
+This is an example of some text that is colored
+
+yellow|This text is yellow
+red;;bold|This text is red and bold
+bright_blue;red;italic,underline|This text is bright blue on red, and is italic and underlined
+(100,60,255)|This text is a custom color
