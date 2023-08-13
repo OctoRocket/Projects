@@ -10,31 +10,24 @@ use std::{
     fs::File,
 };
 
-pub fn read_file<FilePath>(file: FilePath) -> Result<Vec::<String>> where FilePath: AsRef<Path>{
+pub fn read_file<FilePath>(file: FilePath) -> Result<Vec::<String>> where FilePath: AsRef<Path> {
     let lines = io::BufReader::new(File::open(file)?)
         .lines()
-        .map(|l| l.unwrap())
+        .map(Result::unwrap)
         .collect();
     Ok(lines)
 }
 
-pub fn parse(lines: Vec::<String>) -> Result<Vec::<Line>>{
+pub fn parse(lines: Vec::<String>) -> Vec::<Line> {
     let mut result = Vec::<Line>::new();
     for line in lines {
-        let mut resulting_line = Line {
-            text: "".to_string(),
-            fg_color: None,
-            bg_color: None,
-            style: None
-        };
+        let mut resulting_line = Line::default();
         let split_line = line.trim().split_once('|');
-        if split_line.is_some() {
+        if let Some(split_line) = split_line {
             resulting_line.text = split_line
-                .unwrap()
                 .1
                 .to_string();
             let params = split_line
-                .unwrap()
                 .0
                 .split(';')
                 .collect::<Vec<&str>>();
@@ -62,7 +55,7 @@ pub fn parse(lines: Vec::<String>) -> Result<Vec::<Line>>{
         }
         result.push(resulting_line);
     }
-    Ok(result)
+    result
 }
 
 pub fn str_to_rbg(string: &str) -> Result<(u8, u8, u8)> {
@@ -74,6 +67,6 @@ pub fn str_to_rbg(string: &str) -> Result<(u8, u8, u8)> {
         let b = rgb[2].parse::<u8>()?;
         Ok((r, g, b))
     } else {
-        return Err(anyhow::anyhow!("Invalid RGB, {}", string));
+        Err(anyhow::anyhow!("Invalid RGB, {}", string))
     }
 }

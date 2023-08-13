@@ -2,6 +2,7 @@ use colored::Styles;
 use clap::Parser;
 
 // Colored
+#[derive(Default)]
 pub struct Line {
     pub text: String,
     pub fg_color: Option<String>,
