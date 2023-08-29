@@ -40,6 +40,8 @@ fn main() -> Result<()> {
     let height = grid.row_count * grid.resolution * grid.scale_amount
         + (grid.row_count + 1) * grid.line_thickness;
 
+    dbg!(width, height);
+
     // Make the window
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
@@ -48,6 +50,7 @@ fn main() -> Result<()> {
             width,
             height,
         ))
+        .with_resizable(false)
         .build(&event_loop)?;
     
     let surface_texture = SurfaceTexture::new(width, height, &window);
@@ -56,7 +59,8 @@ fn main() -> Result<()> {
     let mut frame = pixels.frame_mut();
 
     // Draw the grid outline
-    grid.draw_grid_lines(&mut frame, width, height);
+    // grid.draw_grid_lines(&mut frame, width, height);
+    functions::sanity_check(&mut frame, width, height);
 
     // Display
     pixels.render()?;

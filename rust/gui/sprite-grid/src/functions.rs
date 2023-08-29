@@ -38,7 +38,7 @@ impl Grid {
         }
         
         for column in 1..width {
-            if column % (self.resolution * self.scale_amount + self.line_thickness) <= self.line_thickness {
+            if column % (self.resolution * self.scale_amount + self.line_thickness) < self.line_thickness {
                 for row in 1..height {
                     set_pixel(
                         Coordinate::new(column, row),
@@ -100,4 +100,22 @@ fn set_pixel(coord: Coordinate, color: RGBA, frame: &mut [u8], width: u32) {
     frame[index + 1] = color.green;
     frame[index + 2] = color.blue;
     frame[index + 3] = color.alpha;
+}
+
+pub fn sanity_check(frame: &mut [u8], width: u32, height: u32) {
+    for row in 0..width {
+        for column in 0..height {
+            set_pixel(
+                Coordinate::new(column, row),
+                RGBA::new(
+                    u8::MAX,
+                    u8::MAX,
+                    u8::MAX,
+                    None,
+                ),
+                frame,
+                width,
+            );
+        }
+    }
 }
