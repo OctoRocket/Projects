@@ -21,48 +21,70 @@ use winit::{
     event_loop::EventLoop,
     window::WindowBuilder,
 };
-use std::io::stdin;
+use std::{
+    io::stdin,
+    thread::sleep,
+    time::Duration,
+};
+use functions::{
+    fill_frame,
+    clear_frame,
+};
+
+use crate::functions::plot_starting_locations;
 
 fn main() -> Result<()> {
     // Define the grid
     let mut grid = Grid::new(
         5,
-        10,
-        8,
-        16,
+        4,
+        32,
         2,
         RGBA::default(),
     );
 
-    // Define the width and height of the window, surface, and grid
-    let width = grid.column_count * grid.resolution * grid.scale_amount 
-        + (grid.column_count + 1) * grid.line_thickness;
-    let height = grid.row_count * grid.resolution * grid.scale_amount
-        + (grid.row_count + 1) * grid.line_thickness;
-
-    dbg!(width, height);
+    dbg!(grid.side_length);
+    dbg!(grid.side_length * grid.side_length, grid.side_length * grid.side_length * 4);
 
     // Make the window
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
         .with_title("Sprite Grid")
         .with_inner_size(winit::dpi::LogicalSize::new(
-            width,
-            height,
+            grid.side_length,
+            grid.side_length,
         ))
         .with_resizable(false)
         .build(&event_loop)?;
     
-    let surface_texture = SurfaceTexture::new(width, height, &window);
-    let mut pixels = Pixels::new(height, width, surface_texture)?;
+    let surface_texture = SurfaceTexture::new(grid.side_length, grid.side_length, &window);
+    let mut pixels = Pixels::new(grid.side_length, grid.side_length, surface_texture)?;
 
     let mut frame = pixels.frame_mut();
 
-    // Draw the grid outline
-    // grid.draw_grid_lines(&mut frame, width, height);
-    functions::sanity_check(&mut frame, width, height);
+    dbg!(frame.len());
+    dbg!((grid.side_length - 1) * grid.side_length * 4 + (grid.side_length - 1) * 4);
 
-    // Display
+    // Preform sanity check
+    fill_frame(&mut frame, RGBA::new(100, 60, 255, None));
+    pixels.render()?;
+    let mut frame = pixels.frame_mut();
+    sleep(Duration::from_secs(1));
+    clear_frame(&mut frame);
+    pixels.render()?;
+    let mut frame = pixels.frame_mut();
+
+    // Plot the starting locations
+    plot_starting_locations(&mut frame, &grid, RGBA::default());
+    pixels.render()?;
+    let mut frame = pixels.frame_mut();
+    sleep(Duration::from_secs(1));
+    clear_frame(&mut frame);
+    pixels.render()?;
+    let mut frame = pixels.frame_mut();
+
+    // Draw the grid outline
+    grid.draw_grid_lines(&mut frame, grid.side_length);
     pixels.render()?;
 
     stdin().read_line(&mut String::new())?;
