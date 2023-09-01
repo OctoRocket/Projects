@@ -1,5 +1,6 @@
-// type PixelGrid = Vec<Vec<RGBA>>;
-// type TileGrid = Vec<Tile>;
+pub type TileGrid = Vec<Tile>;
+pub type PixelGrid = Vec<RGBA>;
+pub type TileCoord = Coord;
 
 #[derive(Debug, Clone, Copy)]
 pub struct RGBA {
@@ -17,17 +18,18 @@ pub struct Grid {
     pub line_thickness: u32, // How thick the grid lines are
     pub line_color: RGBA, // Color of the grid lines
     pub side_length: u32,
-    pub starting_positions: Vec<Coordinate>,
+    pub starting_positions: Vec<Coord>,
 }
 
-// #[derive(Debug)]
-// struct Tile {
-//     content: PixelGrid,
-//     id: String,
-// }
+#[derive(Debug)]
+pub struct Tile {
+    pub content: PixelGrid,
+    pub id: String,
+    pub layer: u32,
+}
 
 #[derive(Debug, Clone, Copy)]
-pub struct Coordinate {
+pub struct Coord {
     pub x: u32,
     pub y: u32,
 }

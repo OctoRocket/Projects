@@ -25,15 +25,27 @@ use std::{
     io::stdin,
     thread::sleep,
     time::Duration,
+    fs::read_dir,
 };
 use functions::{
     fill_frame,
     clear_frame,
+    place_tile,
 };
 
-use crate::functions::plot_starting_locations;
+use crate::{functions::plot_starting_locations, data::{TileCoord, Tile}};
 
 fn main() -> Result<()> {
+    // Get sprites from directory
+    let sprites = read_dir("sprites/")?
+        .fuse()
+        .map(|f| f.unwrap()
+            .path()
+            .to_string_lossy()
+            .to_string()
+        )
+        .collect::<Vec<String>>();
+
     // Define the grid
     let mut grid = Grid::new(
         5,
@@ -85,6 +97,23 @@ fn main() -> Result<()> {
 
     // Draw the grid outline
     grid.draw_grid_lines(&mut frame, grid.side_length);
+
+    // Draw the sprites
+    // The is the part you want to edit to change which sprites are drawn
+    let tile = Tile::new(
+        sprites[0].clone(),
+        "grass".to_string(),
+        0
+    )?;
+    
+    for row in 0..grid.size {
+        for col in 0..grid.size {
+            let coord = TileCoord::new(col, row);
+            place_tile(frame, &tile, coord, &grid)
+        }
+    }
+
+    // Render the frame
     pixels.render()?;
 
     stdin().read_line(&mut String::new())?;
