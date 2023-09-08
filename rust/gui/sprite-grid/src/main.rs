@@ -13,10 +13,6 @@ use pixels::{
     SurfaceTexture,
 };
 use anyhow::Result;
-use data::{
-    Grid,
-    RGBA,
-};
 use winit::{
     event_loop::EventLoop,
     window::WindowBuilder,
@@ -25,29 +21,31 @@ use std::{
     io::stdin,
     thread::sleep,
     time::Duration,
-    fs::read_dir,
-};
-use functions::{
-    fill_frame,
-    clear_frame,
-    place_tile,
+    // fs::read_dir,
 };
 
-use crate::{functions::plot_starting_locations, data::{TileCoord, Tile}};
+use data::{
+    Grid,
+    RGBA,
+};
+use functions::{
+    Canvas,
+    GridFrame,
+};
 
 fn main() -> Result<()> {
     // Get sprites from directory
-    let sprites = read_dir("sprites/")?
-        .fuse()
-        .map(|f| f.unwrap()
-            .path()
-            .to_string_lossy()
-            .to_string()
-        )
-        .collect::<Vec<String>>();
+    // let sprites = read_dir("sprites/")?
+    //     .fuse()
+    //     .map(|f| f.unwrap()
+    //         .path()
+    //         .to_string_lossy()
+    //         .to_string()
+    //     )
+    //     .collect::<Vec<String>>();
 
     // Define the grid
-    let mut grid = Grid::new(
+    let grid = Grid::new(
         5,
         4,
         32,
@@ -72,46 +70,31 @@ fn main() -> Result<()> {
     let surface_texture = SurfaceTexture::new(grid.side_length, grid.side_length, &window);
     let mut pixels = Pixels::new(grid.side_length, grid.side_length, surface_texture)?;
 
-    let mut frame = pixels.frame_mut();
+    let frame = pixels.frame_mut();
 
     dbg!(frame.len());
     dbg!((grid.side_length - 1) * grid.side_length * 4 + (grid.side_length - 1) * 4);
 
     // Preform sanity check
-    fill_frame(&mut frame, RGBA::new(100, 60, 255, None));
+    frame.fill_frame(RGBA::new(100, 60, 255, None));
     pixels.render()?;
-    let mut frame = pixels.frame_mut();
+    let frame = pixels.frame_mut();
     sleep(Duration::from_secs(1));
-    clear_frame(&mut frame);
+    frame.clear_frame();
     pixels.render()?;
-    let mut frame = pixels.frame_mut();
+    let frame = pixels.frame_mut();
 
     // Plot the starting locations
-    plot_starting_locations(&mut frame, &grid, RGBA::default());
+    frame.plot_starting_locations(&grid, RGBA::default());
     pixels.render()?;
-    let mut frame = pixels.frame_mut();
+    let frame = pixels.frame_mut();
     sleep(Duration::from_secs(1));
-    clear_frame(&mut frame);
+    frame.clear_frame();
     pixels.render()?;
-    let mut frame = pixels.frame_mut();
+    let frame = pixels.frame_mut();
 
     // Draw the grid outline
-    grid.draw_grid_lines(&mut frame, grid.side_length);
-
-    // Draw the sprites
-    // The is the part you want to edit to change which sprites are drawn
-    let tile = Tile::new(
-        sprites[0].clone(),
-        "grass".to_string(),
-        0
-    )?;
-    
-    for row in 0..grid.size {
-        for col in 0..grid.size {
-            let coord = TileCoord::new(col, row);
-            place_tile(frame, &tile, coord, &grid)
-        }
-    }
+    frame.draw_grid_lines(&grid, grid.side_length);
 
     // Render the frame
     pixels.render()?;
