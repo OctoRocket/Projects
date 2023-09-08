@@ -6,7 +6,8 @@
 )]
 
 mod data;
-mod functions;
+mod misc;
+mod frame;
 
 use pixels::{
     Pixels,
@@ -28,7 +29,7 @@ use data::{
     Grid,
     RGBA,
 };
-use functions::{
+use frame::{
     Canvas,
     GridFrame,
 };
