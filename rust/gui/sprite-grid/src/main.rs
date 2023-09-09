@@ -1,7 +1,6 @@
 #![deny(clippy::all)]
 #![warn(
     clippy::pedantic,
-    clippy::restriction,
     clippy::nursery,
 )]
 
@@ -27,11 +26,14 @@ use std::{
 
 use data::{
     Grid,
-    RGBA,
+    Rgba,
+    RgbaGrid,
 };
 use frame::{
     Canvas,
-    GridFrame,
+    GridBased,
+    RGBAGridBuilder,
+    FromRGBAGrid,
 };
 
 fn main() -> Result<()> {
@@ -51,7 +53,7 @@ fn main() -> Result<()> {
         4,
         32,
         2,
-        RGBA::default(),
+        Rgba::default(),
     );
 
     dbg!(grid.side_length);
@@ -71,31 +73,37 @@ fn main() -> Result<()> {
     let surface_texture = SurfaceTexture::new(grid.side_length, grid.side_length, &window);
     let mut pixels = Pixels::new(grid.side_length, grid.side_length, surface_texture)?;
 
+    let mut rgba_grid = RgbaGrid::new_grid(pixels.frame().len());
     let frame = pixels.frame_mut();
 
     dbg!(frame.len());
     dbg!((grid.side_length - 1) * grid.side_length * 4 + (grid.side_length - 1) * 4);
 
     // Preform sanity check
-    frame.fill_frame(RGBA::new(100, 60, 255, None));
+    rgba_grid.fill_frame(Rgba::new(100, 60, 255, None));
+    frame.copy_from_vec(&rgba_grid);
     pixels.render()?;
     let frame = pixels.frame_mut();
     sleep(Duration::from_secs(1));
-    frame.clear_frame();
+    rgba_grid.clear_frame();
+    frame.copy_from_vec(&rgba_grid);
     pixels.render()?;
     let frame = pixels.frame_mut();
 
     // Plot the starting locations
-    frame.plot_starting_locations(&grid, RGBA::default());
+    rgba_grid.plot_starting_locations(&grid, Rgba::default());
+    frame.copy_from_vec(&rgba_grid);
     pixels.render()?;
     let frame = pixels.frame_mut();
     sleep(Duration::from_secs(1));
-    frame.clear_frame();
+    rgba_grid.clear_frame();
+    frame.copy_from_vec(&rgba_grid);
     pixels.render()?;
     let frame = pixels.frame_mut();
 
     // Draw the grid outline
-    frame.draw_grid_lines(&grid, grid.side_length);
+    rgba_grid.draw_grid_lines(&grid, grid.side_length);
+    frame.copy_from_vec(&rgba_grid);
 
     // Render the frame
     pixels.render()?;

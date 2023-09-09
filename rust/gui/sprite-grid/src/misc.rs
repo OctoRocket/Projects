@@ -1,6 +1,6 @@
-use super::data::{
+use crate::data::{
     Grid,
-    RGBA,
+    Rgba,
     Coord,
     Tile,
     TileGrid,
@@ -21,8 +21,8 @@ impl Grid {
         resolution: u32,
         scale_amount: u32,
         line_thickness: u32,
-        line_color: RGBA,
-    ) -> Grid {
+        line_color: Rgba,
+    ) -> Self {
         let side_length = size * resolution * scale_amount 
         + (size + 1) * line_thickness;
 
@@ -36,7 +36,7 @@ impl Grid {
             }
         }
 
-        Grid {
+        Self {
             size,
             resolution,
             scale_amount,
@@ -48,16 +48,16 @@ impl Grid {
     }
 }
 
-impl RGBA {
+impl Rgba {
     pub fn new(
         red: u8,
         green: u8,
         blue: u8,
         alpha: Option<u8>,
-    ) -> RGBA {
+    ) -> Self {
         let alpha = alpha.unwrap_or(u8::MAX);
 
-        RGBA {
+        Self {
             red,
             green,
             blue,
@@ -66,25 +66,25 @@ impl RGBA {
     }
 }
 
-impl Coord {
-    pub fn new(
-        x: u32,
-        y: u32,
-    ) -> Coord {
-        Coord {
-            x,
-            y,
-        }
-    }
-}
-
-impl Default for RGBA {
-    fn default() -> RGBA {
-        RGBA {
+impl Default for Rgba {
+    fn default() -> Self {
+        Self {
             red: u8::MAX,
             green: u8::MAX,
             blue: u8::MAX,
             alpha: u8::MAX,
+        }
+    }
+}
+
+impl Coord {
+    pub const fn new(
+        x: u32,
+        y: u32,
+    ) -> Self {
+        Self {
+            x,
+            y,
         }
     }
 }
@@ -94,7 +94,7 @@ impl Tile {
         sprite: String,
         id: String,
         layer: u32,
-    ) -> Result<Tile> {
+    ) -> Result<Self> {
         dbg!(sprite.clone());
         let mut reader = Decoder::new(File::open(sprite)?).read_info()?;
         let mut buf = vec![0; reader.output_buffer_size()];
@@ -104,7 +104,7 @@ impl Tile {
         let mut content = Vec::new();
         for i in 0..buf.len() {
             if i % 4 == 0 {
-                content.push(RGBA::new(
+                content.push(Rgba::new(
                     buf[i],
                     buf[i + 1],
                     buf[i + 2],
@@ -113,7 +113,7 @@ impl Tile {
             }
         };
 
-        Ok(Tile {
+        Ok(Self {
             content,
             id,
             layer,
@@ -131,7 +131,7 @@ impl TileGridBuilder for TileGrid {
     fn new_from_directory(
         directory: PathBuf,
     ) -> Result<TileGrid> {
-        let mut tiles = Vec::new();
+        let mut tiles = Self::new();
 
         for entry in read_dir(directory)? {
             let path = entry?.path();

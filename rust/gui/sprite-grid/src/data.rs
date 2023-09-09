@@ -1,9 +1,10 @@
+pub type RgbaGrid = Vec<Rgba>;
 pub type TileGrid = Vec<Tile>;
-pub type PixelGrid = Vec<RGBA>;
+pub type PixelGrid = Vec<Rgba>;
 pub type TileCoord = Coord;
 
 #[derive(Debug, Clone, Copy)]
-pub struct RGBA {
+pub struct Rgba {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
@@ -16,9 +17,9 @@ pub struct Grid {
     pub resolution: u32, // Resolution of each sprite
     pub scale_amount: u32, // How much to scale up each sprite
     pub line_thickness: u32, // How thick the grid lines are
-    pub line_color: RGBA, // Color of the grid lines
-    pub side_length: u32,
-    pub starting_positions: Vec<Coord>,
+    pub line_color: Rgba, // Color of the grid lines
+    pub side_length: u32, // Length of the sides
+    pub starting_positions: Vec<Coord>, // Where each tiles is started to be drawn
 }
 
 #[derive(Debug)]

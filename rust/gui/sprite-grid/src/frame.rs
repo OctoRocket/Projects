@@ -1,22 +1,46 @@
 use crate::data::{
     Grid,
-    RGBA,
+    Rgba,
     Coord,
     Tile,
     TileCoord,
+    RgbaGrid,
 };
+
+pub trait RGBAGridBuilder {
+    fn new_grid(
+        length: usize,
+    ) -> RgbaGrid;
+}
+impl RGBAGridBuilder for RgbaGrid {
+    fn new_grid(
+            length: usize,
+        ) -> RgbaGrid {
+        let mut grid = Self::with_capacity(length);
+        for _ in 0..length {
+            grid.push(Rgba::new(
+                0,
+                0,
+                0,
+                None,
+            ));
+        }
+
+        grid
+    }
+}
 
 pub trait Canvas {
     fn set_pixel(
         &mut self,
         coord: Coord,
-        color: RGBA,
-        pixel_size: u32,
+        color: Rgba,
+        grid: &Grid,
     );
 
     fn fill_frame(
         &mut self,
-        color: RGBA,
+        color: Rgba,
     );
 
     fn clear_frame(
@@ -24,40 +48,33 @@ pub trait Canvas {
     );
 }
 
-impl Canvas for [u8] {
-    fn set_pixel(&mut self, coord: Coord, color: RGBA, pixel_size: u32) {
-        let index = (coord.y * pixel_size * 4 + coord.x * 4) as usize;
-        // dbg!(coord);
+impl Canvas for RgbaGrid {
+    fn set_pixel(&mut self, coord: Coord, color: Rgba, grid: &Grid) {
+        let index = (coord.y * grid.side_length + coord.x) as usize;
 
-        self[index] = color.red;
-        self[index + 1] = color.green;
-        self[index + 2] = color.blue;
-        self[index + 3] = color.alpha;
+        self[index] = color;
     }
 
-    fn fill_frame(&mut self, color: RGBA) {
-        for i in 0..self.len() {
-            if i % 4 == 0 {
-                self[i] = color.red;
-            } else if i % 4 == 1 {
-                self[i] = color.green;
-            } else if i % 4 == 2 {
-                self[i] = color.blue;
-            } else if i % 4 == 3 {
-                self[i] = color.alpha;
-            }
+    fn fill_frame(&mut self, color: Rgba) {
+        for rgba in self {
+            *rgba = color;
         }
     }
 
     fn clear_frame(&mut self) {
-        for i in 0..self.len() {
-            self[i] = 0;
+        for rgba in self {
+            *rgba = Rgba::new(
+                0,
+                0,
+                0,
+                None,
+            );
         }
     }
 }
 
-pub trait GridFrame {
-    fn place_tile(
+pub trait GridBased {
+    fn tile_fill(
         &mut self,
         tile: &Tile,
         coord: TileCoord,
@@ -73,29 +90,21 @@ pub trait GridFrame {
     fn plot_starting_locations(
         &mut self,
         grid: &Grid,
-        color: RGBA,
+        color: Rgba,
     );
 }
 
-impl GridFrame for [u8] {
-    fn place_tile(&mut self, tile: &Tile, coord: TileCoord, grid: &Grid) {
-        let starting_coord = tile_coord_to_grid_coord(coord, grid);
-        let wrap_coord = Coord::new(
-            starting_coord.x + grid.resolution * grid.scale_amount,
-            starting_coord.y + grid.resolution * grid.scale_amount,
-        );
-        
-        // Draw to the frame
-        for column in starting_coord.x..wrap_coord.x {
-            for row in starting_coord.y..wrap_coord.y {
-                let index = (row * grid.side_length * 4 + column * 4) as usize;
-                let tile_index = ((row - starting_coord.y) * grid.resolution * 4 + (column - starting_coord.x) * 4) as usize;
-    
-                self[index] = tile.content[tile_index].red;
-                self[index + 1] = tile.content[tile_index].green;
-                self[index + 2] = tile.content[tile_index].blue;
-                self[index + 3] = tile.content[tile_index].alpha;
-            }
+impl GridBased for RgbaGrid {
+    fn tile_fill(&mut self, tile: &Tile, coord: TileCoord, grid: &Grid) {
+        for position in &grid.starting_positions {
+            let grid_coord = tile_coord_to_grid_coord(coord, grid);
+            let pixel = tile.content[(position.y * grid.resolution + position.x) as usize];
+
+            self.set_pixel(
+                grid_coord,
+                pixel,
+                grid,
+            );
         }
     }
 
@@ -106,7 +115,7 @@ impl GridFrame for [u8] {
                     self.set_pixel(
                         Coord::new(column, row),
                         grid.line_color,
-                        side_length,
+                        grid,
                     );
                 }
             }
@@ -118,7 +127,7 @@ impl GridFrame for [u8] {
                     self.set_pixel(
                         Coord::new(column, row),
                         grid.line_color,
-                        side_length,
+                        grid,
                     );
                 }
             }
@@ -126,23 +135,23 @@ impl GridFrame for [u8] {
     }
 
     // Plot the starting locations and the pixels to the east, south, and southeast
-    fn plot_starting_locations(&mut self, grid: &Grid, color: RGBA) {
+    fn plot_starting_locations(&mut self, grid: &Grid, color: Rgba) {
         for coord in &grid.starting_positions {
-            self.set_pixel(*coord, color, grid.side_length);
+            self.set_pixel(*coord, color, grid);
             self.set_pixel(
                 Coord::new(coord.x + 1, coord.y),
                 color,
-                grid.side_length,
+                grid,
             );
             self.set_pixel(
                 Coord::new(coord.x, coord.y + 1),
                 color,
-                grid.side_length,
+                grid,
             );
             self.set_pixel(
                 Coord::new(coord.x + 1, coord.y + 1),
                 color,
-                grid.side_length,
+                grid,
             );
         }
     }
@@ -150,4 +159,31 @@ impl GridFrame for [u8] {
 
 fn tile_coord_to_grid_coord(tile_coord: TileCoord, grid: &Grid) -> Coord {
     grid.starting_positions[(tile_coord.y * grid.size + tile_coord.x) as usize]
+}
+
+impl From<Rgba> for [u8; 4] {
+    fn from(rgba: Rgba) -> Self {
+        [rgba.red, rgba.green, rgba.blue, rgba.alpha]
+    }
+}
+
+// Convert an RGBAGrid into a [u8] for use with the pixels crate
+pub trait FromRGBAGrid {
+    fn copy_from_vec(&mut self, rgba_grid: &RgbaGrid);
+}
+
+impl FromRGBAGrid for [u8] {
+    fn copy_from_vec(&mut self, rgba_grid: &RgbaGrid) {
+        for i in 0..self.len() {
+            if i % 4 == 0 {
+                self[i] = rgba_grid[i / 4].red;
+            } else if i % 4 == 1 {
+                self[i] = rgba_grid[i / 4].green;
+            } else if i % 4 == 2 {
+                self[i] = rgba_grid[i / 4].blue;
+            } else if i % 4 == 3 {
+                self[i] = rgba_grid[i / 4].alpha;
+            }
+        }
+    }
 }
