@@ -1,4 +1,4 @@
-use crate::data::{
+use crate::types::{
     Grid,
     Rgba,
     Coord,
@@ -63,12 +63,7 @@ impl Canvas for RgbaGrid {
 
     fn clear_frame(&mut self) {
         for rgba in self {
-            *rgba = Rgba::new(
-                0,
-                0,
-                0,
-                None,
-            );
+            *rgba = Rgba::default();
         }
     }
 }

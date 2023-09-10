@@ -1,4 +1,4 @@
-use crate::data::{
+use crate::types::{
     Grid,
     Rgba,
     Coord,
@@ -69,9 +69,9 @@ impl Rgba {
 impl Default for Rgba {
     fn default() -> Self {
         Self {
-            red: u8::MAX,
-            green: u8::MAX,
-            blue: u8::MAX,
+            red: 0,
+            green: 0,
+            blue: 0,
             alpha: u8::MAX,
         }
     }

@@ -4,8 +4,8 @@
     clippy::nursery,
 )]
 
-mod data;
-mod misc;
+mod types;
+mod general;
 mod frame;
 
 use pixels::{
@@ -24,7 +24,7 @@ use std::{
     // fs::read_dir,
 };
 
-use data::{
+use types::{
     Grid,
     Rgba,
     RgbaGrid,
