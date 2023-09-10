@@ -28,6 +28,7 @@ use types::{
     Grid,
     Rgba,
     RgbaGrid,
+    Tile,
 };
 use frame::{
     Canvas,
@@ -37,16 +38,6 @@ use frame::{
 };
 
 fn main() -> Result<()> {
-    // Get sprites from directory
-    // let sprites = read_dir("sprites/")?
-    //     .fuse()
-    //     .map(|f| f.unwrap()
-    //         .path()
-    //         .to_string_lossy()
-    //         .to_string()
-    //     )
-    //     .collect::<Vec<String>>();
-
     // Define the grid
     let grid = Grid::new(
         5,
@@ -72,14 +63,50 @@ fn main() -> Result<()> {
 
     let mut rgba_grid = RgbaGrid::new_grid(pixels.frame().len());
     
-    // Preform sanity check
+    // Preform basic setup
     render!(pixels, rgba_grid,
-        rgba_grid.fill_frame(Rgba::new(100, 60, 255, None)) => sleep(Duration::from_secs(1)),
+        // Preform sanity check
+        rgba_grid.fill_frame(Rgba::new(100, 60, 255, None)) => sleep(Duration::from_millis(250)),
         rgba_grid.clear_frame(),
-        rgba_grid.plot_starting_locations(&grid, Rgba::white()) => sleep(Duration::from_secs(1)),
+        // plot tile draw-from locations
+        rgba_grid.plot_starting_locations(&grid, Rgba::white()) => sleep(Duration::from_millis(250)),
         rgba_grid.clear_frame(),
-        rgba_grid.draw_grid_lines(&grid, grid.side_length)
+        // draw the grid lines
+        rgba_grid.draw_grid_lines(&grid, grid.side_length) => sleep(Duration::from_millis(250))
     );
+
+    // Make a grass tile and then fill the grid with it
+    let grass_tile = Tile::new(
+        &"sprites/grass.bmp",
+        &grid,
+        0,
+    )?;
+
+    loop {
+        render!(pixels, rgba_grid,
+            rgba_grid.tile_fill(&grass_tile, &grid) => sleep(Duration::from_millis(500)),
+            rgba_grid.clear_frame() => sleep(Duration::from_millis(500))
+        );
+    }
+
+    // // Do a little test
+    // render!(pixels, rgba_grid,
+    //     {
+    //         for x in 0..=(grid.side_length) {
+    //             for y in 0..=(grid.side_length) {
+    //                 rgba_grid.set_pixel(
+    //                     Coord::new(x, y),
+    //                     Rgba::new(
+    //                         u8::try_from(x % u32::try_from(u8::MAX)?)?,
+    //                         u8::try_from(y % u32::try_from(u8::MAX)?)?,
+    //                         u8::try_from(x / 2 % u32::try_from(u8::MAX)?)?,
+    //                         None),
+    //                     &grid,
+    //                 );
+    //             }
+    //         }
+    //     }
+    // );
 
     stdin().read_line(&mut String::new())?;
 

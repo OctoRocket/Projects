@@ -3,7 +3,6 @@ use crate::types::{
     Rgba,
     Coord,
     Tile,
-    TileCoord,
     RgbaGrid,
 };
 
@@ -69,10 +68,10 @@ impl Canvas for RgbaGrid {
 }
 
 pub trait GridBased {
-    fn tile_fill(
+    fn place_tile(
         &mut self,
         tile: &Tile,
-        coord: TileCoord,
+        index: usize,
         grid: &Grid,
     );
 
@@ -87,19 +86,36 @@ pub trait GridBased {
         grid: &Grid,
         color: Rgba,
     );
+
+    fn tile_fill(
+        &mut self,
+        tile: &Tile,
+        grid: &Grid
+    );
 }
 
 impl GridBased for RgbaGrid {
-    fn tile_fill(&mut self, tile: &Tile, coord: TileCoord, grid: &Grid) {
-        for position in &grid.starting_positions {
-            let grid_coord = tile_coord_to_grid_coord(coord, grid);
-            let pixel = tile.content[(position.y * grid.resolution + position.x) as usize];
+    fn place_tile(&mut self, tile: &Tile, position_index: usize, grid: &Grid) {
+        let starting_position = grid.starting_positions[position_index];
+        let tile_width = grid.resolution;
+        
+        for y in 0..(tile_width) {
+            for x in 0..(tile_width) {
+                let tile_index = (y * tile_width + x) as usize;
 
-            self.set_pixel(
-                grid_coord,
-                pixel,
-                grid,
-            );
+                self.set_pixel(Coord::new(
+                    starting_position.x + x,
+                    starting_position.y + y,
+                ),
+                tile.content[tile_index],
+                grid);
+            }
+        }
+    }
+
+    fn tile_fill(&mut self, tile: &Tile, grid: &Grid) {
+        for starting_position in 0..grid.starting_positions.len() {
+            self.place_tile(tile, starting_position, grid);
         }
     }
 
@@ -152,10 +168,6 @@ impl GridBased for RgbaGrid {
     }
 }
 
-fn tile_coord_to_grid_coord(tile_coord: TileCoord, grid: &Grid) -> Coord {
-    grid.starting_positions[(tile_coord.y * grid.size + tile_coord.x) as usize]
-}
-
 // Convert an RGBAGrid into a [u8] for use with the pixels crate
 pub trait FromRGBAGrid {
     fn copy_from_vec(&mut self, rgba_grid: &RgbaGrid);
@@ -176,3 +188,4 @@ impl FromRGBAGrid for [u8] {
         }
     }
 }
+

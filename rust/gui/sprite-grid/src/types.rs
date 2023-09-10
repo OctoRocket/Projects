@@ -1,14 +1,8 @@
 /// A type alias for a grid of RGBA values.
 pub type RgbaGrid = Vec<Rgba>;
 
-/// A type alias for a grid of tiles.
-pub type TileGrid = Vec<Tile>;
-
 /// A type alias for a grid of RGBA pixels.
 pub type PixelGrid = Vec<Rgba>;
-
-/// A type alias for a tile specific coordinates.
-pub type TileCoord = Coord;
 
 /// A struct representing an RGBA color.
 #[derive(Debug, Clone, Copy)]
@@ -35,7 +29,6 @@ pub struct Grid {
 #[derive(Debug)]
 pub struct Tile {
     pub content: PixelGrid,
-    pub id: String,
     pub layer: u32,
 }
 

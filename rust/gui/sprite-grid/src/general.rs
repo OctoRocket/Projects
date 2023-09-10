@@ -3,16 +3,8 @@ use crate::types::{
     Rgba,
     Coord,
     Tile,
-    TileGrid,
 };
-use std::{
-    path::PathBuf,
-    fs::{
-        File,
-        read_dir,
-    }
-};
-use png::Decoder;
+use bmp::open;
 use anyhow::Result;
 
 /// Macro for rendering a sprite grid to a pixel buffer and displaying it.
@@ -145,77 +137,36 @@ impl Tile {
     ///
     /// A `Result` containing the new `Tile` if successful, or an error if the sprite file
     /// could not be opened or decoded.
-    pub fn new(
-        sprite: String,
-        id: String,
+    pub fn new<T>(
+        sprite_path: &T,
+        grid: &Grid,
         layer: u32,
-    ) -> Result<Self> {
-        dbg!(sprite.clone());
-        let mut reader = Decoder::new(File::open(sprite)?).read_info()?;
-        let mut buf = vec![0; reader.output_buffer_size()];
-        reader.next_frame(&mut buf)?;
+    ) -> Result<Self> where T: ToString {
+        let sprite_path = sprite_path.to_string();
+
+        dbg!(sprite_path.clone());
+        let image = open(sprite_path)?;
 
         // Convert the buffer to a PixelGrid
         let mut content = Vec::new();
-        for i in 0..buf.len() {
-            if i % 4 == 0 {
-                content.push(Rgba::new(
-                    buf[i],
-                    buf[i + 1],
-                    buf[i + 2],
-                    Some(buf[i + 3]),
-                ));
+        for x in 0..grid.resolution {
+            for y in 0..grid.resolution {
+                let pixel = image.get_pixel(x, y);
+                content.push(Rgba::new(pixel.r, pixel.b, pixel.g, None));
             }
         };
-
-        Ok(Self {
-            content,
-            id,
-            layer,
-        })
-    }
-}
-
-trait TileGridBuilder {
-    fn new_from_directory(
-        directory: PathBuf,
-    ) -> Result<TileGrid>;
-}
-/// Implementation of the `TileGridBuilder` trait for the `TileGrid` struct.
-impl TileGridBuilder for TileGrid {
-    /// Creates a new `TileGrid` instance from the images in the specified directory.
-    ///
-    /// # Arguments
-    ///
-    /// * `directory` - A `PathBuf` representing the directory containing the images.
-    ///
-    /// # Returns
-    ///
-    /// A `Result` containing the new `TileGrid` instance if successful, or an error if the
-    /// directory could not be read or if there was an error creating a `Tile` instance from one
-    /// of the images.
-    fn new_from_directory(
-        directory: PathBuf,
-    ) -> Result<TileGrid> {
-        let mut tiles = Self::new();
-
-        for entry in read_dir(directory)? {
-            let path = entry?.path();
-            let file_name = path
-                .file_name()
-                .unwrap()
-                .to_str()
-                .unwrap()
-                .to_string();
-            let tile = Tile::new(
-                path.to_string_lossy().to_string(),
-                file_name,
-                0,
-            )?;
-
-            tiles.push(tile);
+        
+        // Scale the tile
+        let mut scaled_content = Vec::new();
+        for pixel in content {
+            for _ in 0..grid.scale_amount {
+                scaled_content.push(pixel);
+            }
         }
 
-        Ok(tiles)
+        Ok(Self {
+            content: scaled_content,
+            layer,
+        })
     }
 }
