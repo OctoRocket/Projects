@@ -15,6 +15,14 @@ use std::{
 use png::Decoder;
 use anyhow::Result;
 
+/// Macro for rendering a sprite grid to a pixel buffer and displaying it.
+///
+/// # Arguments
+///
+/// * `$pixels` - A mutable reference to a `PixelBuffer` object.
+/// * `$rgba_grid` - An expression that evaluates to a vector of RGBA color values.
+/// * `$code` - Arbitrary code to be executed before rendering the sprite grid.
+/// * `$post_render_task` - Optional code to be executed after rendering the sprite grid.
 #[macro_export]
 macro_rules! render {
     ($pixels:expr, $rgba_grid:expr, $($code:expr$(=> $post_render_task:expr)?),*) => {
@@ -125,6 +133,18 @@ impl Coord {
 }
 
 impl Tile {
+    /// Creates a new tile with the given sprite, identifier, and layer.
+    ///
+    /// # Arguments
+    ///
+    /// * `sprite` - A string representing the path to the sprite file.
+    /// * `id` - A string representing the unique identifier of the tile.
+    /// * `layer` - An unsigned 32-bit integer representing the layer of the tile.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the new `Tile` if successful, or an error if the sprite file
+    /// could not be opened or decoded.
     pub fn new(
         sprite: String,
         id: String,
@@ -161,8 +181,19 @@ trait TileGridBuilder {
         directory: PathBuf,
     ) -> Result<TileGrid>;
 }
-
+/// Implementation of the `TileGridBuilder` trait for the `TileGrid` struct.
 impl TileGridBuilder for TileGrid {
+    /// Creates a new `TileGrid` instance from the images in the specified directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `directory` - A `PathBuf` representing the directory containing the images.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the new `TileGrid` instance if successful, or an error if the
+    /// directory could not be read or if there was an error creating a `Tile` instance from one
+    /// of the images.
     fn new_from_directory(
         directory: PathBuf,
     ) -> Result<TileGrid> {

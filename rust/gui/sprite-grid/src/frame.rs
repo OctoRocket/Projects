@@ -156,12 +156,6 @@ fn tile_coord_to_grid_coord(tile_coord: TileCoord, grid: &Grid) -> Coord {
     grid.starting_positions[(tile_coord.y * grid.size + tile_coord.x) as usize]
 }
 
-impl From<Rgba> for [u8; 4] {
-    fn from(rgba: Rgba) -> Self {
-        [rgba.red, rgba.green, rgba.blue, rgba.alpha]
-    }
-}
-
 // Convert an RGBAGrid into a [u8] for use with the pixels crate
 pub trait FromRGBAGrid {
     fn copy_from_vec(&mut self, rgba_grid: &RgbaGrid);
