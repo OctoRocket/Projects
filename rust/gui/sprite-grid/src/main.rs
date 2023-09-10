@@ -56,9 +56,6 @@ fn main() -> Result<()> {
         Rgba::white(),
     );
 
-    dbg!(grid.side_length);
-    dbg!(grid.side_length * grid.side_length, grid.side_length * grid.side_length * 4);
-
     // Make the window
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
