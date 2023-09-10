@@ -141,7 +141,7 @@ impl Tile {
         sprite_path: &T,
         grid: &Grid,
         layer: u32,
-    ) -> Result<Self> where T: ToString {
+    ) -> Result<Self> where T: ToString + ?Sized {
         let sprite_path = sprite_path.to_string();
 
         dbg!(sprite_path.clone());
@@ -156,6 +156,8 @@ impl Tile {
             }
         };
         
+        dbg!(content.len());
+
         // Scale the tile
         let mut scaled_content = Vec::new();
         for pixel in content {
@@ -163,6 +165,13 @@ impl Tile {
                 scaled_content.push(pixel);
             }
         }
+        scaled_content.clone().as_slice().chunks_exact(grid.resolution as usize).for_each(|chunk| {
+            for _ in 0..grid.scale_amount {
+                scaled_content.extend(chunk.clone());
+            }
+        });
+
+        dbg!(scaled_content.len());
 
         Ok(Self {
             content: scaled_content,

@@ -41,8 +41,8 @@ fn main() -> Result<()> {
     // Define the grid
     let grid = Grid::new(
         5,
-        4,
-        32,
+        8,
+        16,
         2,
         Rgba::white(),
     );
@@ -77,36 +77,14 @@ fn main() -> Result<()> {
 
     // Make a grass tile and then fill the grid with it
     let grass_tile = Tile::new(
-        &"sprites/grass.bmp",
+        "sprites/grass.bmp",
         &grid,
         0,
     )?;
 
-    loop {
-        render!(pixels, rgba_grid,
-            rgba_grid.tile_fill(&grass_tile, &grid) => sleep(Duration::from_millis(500)),
-            rgba_grid.clear_frame() => sleep(Duration::from_millis(500))
-        );
-    }
-
-    // // Do a little test
-    // render!(pixels, rgba_grid,
-    //     {
-    //         for x in 0..=(grid.side_length) {
-    //             for y in 0..=(grid.side_length) {
-    //                 rgba_grid.set_pixel(
-    //                     Coord::new(x, y),
-    //                     Rgba::new(
-    //                         u8::try_from(x % u32::try_from(u8::MAX)?)?,
-    //                         u8::try_from(y % u32::try_from(u8::MAX)?)?,
-    //                         u8::try_from(x / 2 % u32::try_from(u8::MAX)?)?,
-    //                         None),
-    //                     &grid,
-    //                 );
-    //             }
-    //         }
-    //     }
-    // );
+    render!(pixels, rgba_grid,
+        rgba_grid.tile_fill(&grass_tile, &grid)
+    );
 
     stdin().read_line(&mut String::new())?;
 
