@@ -15,7 +15,33 @@ use std::{
 use png::Decoder;
 use anyhow::Result;
 
+#[macro_export]
+macro_rules! render {
+    ($pixels:expr, $rgba_grid:expr, $($code:expr$(; $post_render_task:expr)?),*) => {
+        $(
+            let frame = $pixels.frame_mut();
+            $code;
+            frame.copy_from_vec(&$rgba_grid);
+            $pixels.render()?;
+            $($post_render_task;)?
+        )*
+    };
+}
+
 impl Grid {
+    /// Creates a new grid with the given parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `size` - The number of sprites in each row and column of the grid.
+    /// * `resolution` - The resolution of each sprite in pixels.
+    /// * `scale_amount` - The amount to scale each sprite by.
+    /// * `line_thickness` - The thickness of the lines separating the sprites.
+    /// * `line_color` - The color of the lines separating the sprites.
+    ///
+    /// # Returns
+    ///
+    /// A new `Grid` instance.
     pub fn new(
         size: u32,
         resolution: u32,
@@ -62,6 +88,15 @@ impl Rgba {
             green,
             blue,
             alpha,
+        }
+    }
+
+    pub const fn white() -> Self {
+        Self {
+            red: u8::MAX,
+            green: u8::MAX,
+            blue: u8::MAX,
+            alpha: u8::MAX,
         }
     }
 }

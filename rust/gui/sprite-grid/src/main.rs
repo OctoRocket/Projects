@@ -53,7 +53,7 @@ fn main() -> Result<()> {
         4,
         32,
         2,
-        Rgba::default(),
+        Rgba::white(),
     );
 
     dbg!(grid.side_length);
@@ -74,39 +74,15 @@ fn main() -> Result<()> {
     let mut pixels = Pixels::new(grid.side_length, grid.side_length, surface_texture)?;
 
     let mut rgba_grid = RgbaGrid::new_grid(pixels.frame().len());
-    let frame = pixels.frame_mut();
-
-    dbg!(frame.len());
-    dbg!((grid.side_length - 1) * grid.side_length * 4 + (grid.side_length - 1) * 4);
-
+    
     // Preform sanity check
-    rgba_grid.fill_frame(Rgba::new(100, 60, 255, None));
-    frame.copy_from_vec(&rgba_grid);
-    pixels.render()?;
-    let frame = pixels.frame_mut();
-    sleep(Duration::from_secs(1));
-    rgba_grid.clear_frame();
-    frame.copy_from_vec(&rgba_grid);
-    pixels.render()?;
-    let frame = pixels.frame_mut();
-
-    // Plot the starting locations
-    rgba_grid.plot_starting_locations(&grid, Rgba::default());
-    frame.copy_from_vec(&rgba_grid);
-    pixels.render()?;
-    let frame = pixels.frame_mut();
-    sleep(Duration::from_secs(1));
-    rgba_grid.clear_frame();
-    frame.copy_from_vec(&rgba_grid);
-    pixels.render()?;
-    let frame = pixels.frame_mut();
-
-    // Draw the grid outline
-    rgba_grid.draw_grid_lines(&grid, grid.side_length);
-    frame.copy_from_vec(&rgba_grid);
-
-    // Render the frame
-    pixels.render()?;
+    render!(pixels, rgba_grid,
+        rgba_grid.fill_frame(Rgba::new(100, 60, 255, None)); sleep(Duration::from_secs(1)),
+        rgba_grid.clear_frame(),
+        rgba_grid.plot_starting_locations(&grid, Rgba::white()); sleep(Duration::from_secs(1)),
+        rgba_grid.clear_frame(),
+        rgba_grid.draw_grid_lines(&grid, grid.side_length)
+    );
 
     stdin().read_line(&mut String::new())?;
 
