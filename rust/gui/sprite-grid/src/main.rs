@@ -77,9 +77,9 @@ fn main() -> Result<()> {
     
     // Preform sanity check
     render!(pixels, rgba_grid,
-        rgba_grid.fill_frame(Rgba::new(100, 60, 255, None)); sleep(Duration::from_secs(1)),
+        rgba_grid.fill_frame(Rgba::new(100, 60, 255, None)) => sleep(Duration::from_secs(1)),
         rgba_grid.clear_frame(),
-        rgba_grid.plot_starting_locations(&grid, Rgba::white()); sleep(Duration::from_secs(1)),
+        rgba_grid.plot_starting_locations(&grid, Rgba::white()) => sleep(Duration::from_secs(1)),
         rgba_grid.clear_frame(),
         rgba_grid.draw_grid_lines(&grid, grid.side_length)
     );

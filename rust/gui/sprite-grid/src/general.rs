@@ -17,7 +17,7 @@ use anyhow::Result;
 
 #[macro_export]
 macro_rules! render {
-    ($pixels:expr, $rgba_grid:expr, $($code:expr$(; $post_render_task:expr)?),*) => {
+    ($pixels:expr, $rgba_grid:expr, $($code:expr$(=> $post_render_task:expr)?),*) => {
         $(
             let frame = $pixels.frame_mut();
             $code;
