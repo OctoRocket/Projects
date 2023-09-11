@@ -98,9 +98,6 @@ impl GridBased for RgbaGrid {
     fn place_tile(&mut self, tile: &Tile, position_index: usize, grid: &Grid) {
         let starting_position = grid.starting_positions[position_index];
         let tile_width = grid.resolution * grid.scale_amount;
-        
-        dbg!(tile.content.len());
-        dbg!((tile_width - 1) * tile_width + (tile_width - 1));
 
         for y in 0..(tile_width) {
             for x in 0..(tile_width) {

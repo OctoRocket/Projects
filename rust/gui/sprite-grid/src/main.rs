@@ -42,9 +42,9 @@ fn main() -> Result<()> {
     let grid = Grid::new(
         5,
         8,
-        16,
-        2,
-        Rgba::white(),
+        12,
+        4,
+        Rgba::default(),
     );
 
     // Make the window

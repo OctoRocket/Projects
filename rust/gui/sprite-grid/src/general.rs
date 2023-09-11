@@ -143,39 +143,61 @@ impl Tile {
         layer: u32,
     ) -> Result<Self> where T: ToString {
         let sprite_path = sprite_path.to_string();
-
-        dbg!(sprite_path.clone());
         let image = open(sprite_path)?;
 
         // Convert the buffer to a PixelGrid
         let mut content = Vec::new();
-        for x in 0..grid.resolution {
-            for y in 0..grid.resolution {
+        for y in 0..grid.resolution {
+            for x in 0..grid.resolution {
                 let pixel = image.get_pixel(x, y);
-                content.push(Rgba::new(pixel.r, pixel.b, pixel.g, None));
+                content.push(pixel_to_rgba(pixel));
             }
         };
-        
-        dbg!(content.len());
 
         // Scale the tile
-        let mut scaled_content = Vec::new();
-        for pixel in content {
-            for _ in 0..grid.scale_amount {
-                scaled_content.push(pixel);
-            }
-        }
-        scaled_content.clone().as_slice().chunks_exact(grid.resolution as usize).for_each(|chunk| {
-            for _ in 0..grid.scale_amount {
-                scaled_content.extend(chunk.clone());
-            }
-        });
-
-        dbg!(scaled_content.len());
+        let scaled_content = content
+            .clone()
+            .as_slice()
+            .chunks_exact(grid.resolution as usize)
+            .flat_map(|chunk| append_n_times(chunk.iter()
+                .map(|pixel| repeat_in_vec(pixel, grid.scale_amount))
+                .collect::<Vec<_>>()
+                .as_slice(),
+                grid.scale_amount
+            ))
+            .flatten()
+            .copied()
+            .collect::<Vec<_>>();
 
         Ok(Self {
             content: scaled_content,
             layer,
         })
     }
+}
+
+fn pixel_to_rgba(pixel: bmp::Pixel) -> Rgba {
+    Rgba::new(pixel.r, pixel.g, pixel.b, None)
+}
+
+fn append_n_times<T>(vec: &[T], n: u32) -> Vec<T> 
+    where T: Clone
+{
+    let mut new_vec = Vec::new();
+    for _ in 0..n {
+        new_vec.extend(vec.to_owned());
+    }
+
+    new_vec
+}
+
+fn repeat_in_vec<T>(elem: T, n: u32) -> Vec<T> 
+    where T: Clone
+{
+    let mut vec = Vec::new();
+    for _ in 0..n {
+        vec.push(elem.clone());
+    }
+
+    vec
 }
