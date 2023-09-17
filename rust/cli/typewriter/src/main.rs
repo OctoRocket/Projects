@@ -20,7 +20,6 @@ use args::Args;
 use anyhow::{
     Result,
     Ok,
-    anyhow,
 };
 use rand::{
     Rng,
