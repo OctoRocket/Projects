@@ -4,6 +4,8 @@
     clippy::nursery,
 )]
 
+mod args;
+
 use std::{
     io::{
         BufRead,
@@ -13,35 +15,30 @@ use std::{
     },
     thread::sleep,
     time::Duration,
-    env::{
-        Args,
-        args,
-    },
 };
-use anyhow::Result;
+use args::Args;
+use anyhow::{
+    Result,
+    Ok,
+    anyhow,
+};
 use rand::{
     Rng,
     thread_rng,
 };
+use clap::Parser;
 
-fn duration(args: Args) -> Result<u64> {
-    let mut args = args;
-
-    if let Some(second_arg) = args.nth(2) {
-        let first_arg = args
-            .nth(1)
-            .unwrap()
-            .parse::<u64>()?;
-        let second_arg = second_arg.parse::<u64>()?;
-        Ok(thread_rng().gen_range(first_arg..=second_arg))
-    } else if let Some(first_arg) = args.nth(1) {
-        Ok(first_arg.parse::<u64>()?)
-    } else {
-        Ok(25)
+fn duration(args: &Args) -> Result<u64> {
+    
+    if let Some(random) = &args.random {
+        return Ok(thread_rng().gen_range(random[0]..=random[1]));
     }
+
+    Ok(args.delay)
 }
 
 fn main() -> Result<()>{
+    let args = Args::parse();
     let mut chars = Vec::new();
 
     let lines = stdin().lock().lines();
@@ -57,7 +54,7 @@ fn main() -> Result<()>{
 
     for character in chars {
         print!("{character}");
-        sleep(Duration::from_millis(duration(args())?));
+        sleep(Duration::from_millis(duration(&args)?));
         stdout().flush()?;
     }
 
