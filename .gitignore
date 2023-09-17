@@ -9,4 +9,4 @@ target/
 Cargo.lock
 .vscode
 *.log
-
+.idea
