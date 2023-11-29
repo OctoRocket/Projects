@@ -1,1 +1,11 @@
-{c1}C{c2}h{c1}r{c2}i{c1}s{c2}t{c1}m{c2}a{c1}s
+This is a test file
+Here I'm going to put some {c1}test text{c0}!
+
+First, testing all the colors of the {c1}r{c2}a{c3}i{c4}n{c5}b{c6}o{c7}w{c0}! kinda...
+And now in color order: {c1}r{c4}a{c2}i{c5}n{c3}b{c6}o{c7}w{c0}!
+
+You can easily {c2}highlight{c0} sections of text that are {c1}important{c0}!
+
+Such as this: {c4}!TODO: Make exiting handled asynchronously!{c0}
+
+It's easy to make {c5}colorful{c0} text!

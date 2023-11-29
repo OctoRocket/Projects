@@ -34,8 +34,8 @@ enum ProgramError {
     #[error("text malformation error")]
     TextError,
 
-    #[error("unindentifiable color tag")]
-    ConversionError,
+    #[error("unindentifiable color tag: {0}")]
+    ConversionError(String),
 }
 
 #[derive(Debug)]
@@ -63,7 +63,7 @@ fn to_color(text: &str) -> Result<Color> {
         r"{c5}" => Ok(Color::Cyan),
         r"{c6}" => Ok(Color::Magenta),
         r"{c7}" => Ok(Color::Black),
-        _ => Err(Error::new(ProgramError::ConversionError)),
+        t => Err(Error::new(ProgramError::ConversionError(t.to_string()))),
     }
 }
 
@@ -91,6 +91,12 @@ fn parse_file(mut file: File) -> Result<Vec<Text>> {
     Ok(texts)
 }
 
+fn display_text(text: Vec<Text>) {
+    for segment in text {
+        print!("{}", segment.content.as_str().color(segment.color_tag));
+    }
+}
+
 fn main() -> Result<()> {
     let path = args().nth(1);
     if path.is_none() {
@@ -102,12 +108,14 @@ fn main() -> Result<()> {
         print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
         let file = File::open(PathBuf::from(path.clone()))?;
 
-        for segment in parse_file(file.try_clone()?)? {
-            print!("{}", segment.content.as_str().color(segment.color_tag));
-        }
+        match parse_file(file.try_clone()?)
+        {
+            Ok(v) => display_text(v),
+            Err(e) => println!("{e}"),
+        };
         println!();
 
-        sleep(Duration::from_secs(1))
+        sleep(Duration::from_millis(250))
     }
 
     Ok(())
