@@ -104,5 +104,6 @@ fn main() -> Result<()> {
         print!("{}", segment.content.as_str().color(segment.color_tag))
     }
 
+    println!();
     Ok(())
 }
