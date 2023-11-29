@@ -1,1 +1,1 @@
-{c0}{c1}This is a {c2}TEST {c0}message.
+{c1}C{c2}h{c1}r{c2}i{c1}s{c2}t{c1}m{c2}a{c1}s
