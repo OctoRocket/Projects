@@ -9,6 +9,8 @@ use std::{
     path::PathBuf,
     io::Read,
     env::args,
+    thread::sleep,
+    time::Duration,
 };
 use anyhow::{
     Result,
@@ -52,7 +54,7 @@ impl Text {
 }
 
 fn to_color(text: &str) -> Result<Color> {
-    let color = match text {
+    match text {
         r"{c0}" => Ok(Color::White),
         r"{c1}" => Ok(Color::Red),
         r"{c2}" => Ok(Color::Green),
@@ -62,12 +64,10 @@ fn to_color(text: &str) -> Result<Color> {
         r"{c6}" => Ok(Color::Magenta),
         r"{c7}" => Ok(Color::Black),
         _ => Err(Error::new(ProgramError::ConversionError)),
-    };
-    
-    color
+    }
 }
 
-fn split_text(text: String) -> Result<Text> {
+fn split_text(text: &str) -> Result<Text> {
     let re = Regex::new(r"\{.*?\}")?;
     let color_tag = re.find(&text).ok_or(ProgramError::ColorTagError)?.as_str();
     let content = re.split(&text).nth(1).ok_or(ProgramError::TextError)?;
@@ -85,7 +85,7 @@ fn parse_file(mut file: File) -> Result<Vec<Text>> {
     let mut texts = Vec::new();
 
     for s in segments {
-        texts.push(split_text(s)?)
+        texts.push(split_text(&s)?);
     }
 
     Ok(texts)
@@ -97,13 +97,18 @@ fn main() -> Result<()> {
         return Err(Error::new(ProgramError::PathError));
     } 
     let path = path.unwrap();
-
-    let file = File::open(PathBuf::from(path))?;
     
-    for segment in parse_file(file)? {
-        print!("{}", segment.content.as_str().color(segment.color_tag))
+    loop {
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+        let file = File::open(PathBuf::from(path.clone()))?;
+
+        for segment in parse_file(file.try_clone()?)? {
+            print!("{}", segment.content.as_str().color(segment.color_tag));
+        }
+        println!();
+
+        sleep(Duration::from_secs(1))
     }
 
-    println!();
     Ok(())
 }
