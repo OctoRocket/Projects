@@ -117,6 +117,4 @@ fn main() -> Result<()> {
 
         sleep(Duration::from_millis(250))
     }
-
-    Ok(())
 }
