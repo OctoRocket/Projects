@@ -6,6 +6,6 @@ And now in color order: {c1}r{c4}a{c2}i{c5}n{c3}b{c6}o{c7}w{c0}!
 
 You can easily {c2}highlight{c0} sections of text that are {c1}important{c0}!
 
-Such as this: {c4}!TODO: Make exiting handled asynchronously!{c0}
+Such as this: {c4}!TODO: Make this video!{c0}
 
 It's easy to make {c5}colorful{c0} text!

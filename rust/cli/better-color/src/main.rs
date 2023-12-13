@@ -26,31 +26,22 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 enum ProgramError {
     #[error("no path provided")]
-    PathError,
+    Path,
 
     #[error("missing color tag")]
-    ColorTagError,
+    ColorTag,
 
     #[error("text malformation error")]
-    TextError,
+    Text,
 
     #[error("unindentifiable color tag: {0}")]
-    ConversionError(String),
+    Conversion(String),
 }
 
 #[derive(Debug)]
 struct  Text {
     color_tag: Color,
     content: String
-}
-
-impl Text {
-    fn new(color_tag: Color, content: String) -> Self {
-        Text {
-            color_tag,
-            content,
-        }
-    }
 }
 
 fn to_color(text: &str) -> Result<Color> {
@@ -63,16 +54,19 @@ fn to_color(text: &str) -> Result<Color> {
         r"{c5}" => Ok(Color::Cyan),
         r"{c6}" => Ok(Color::Magenta),
         r"{c7}" => Ok(Color::Black),
-        t => Err(Error::new(ProgramError::ConversionError(t.to_string()))),
+        t => Err(Error::new(ProgramError::Conversion(t.to_string()))),
     }
 }
 
 fn split_text(text: &str) -> Result<Text> {
     let re = Regex::new(r"\{.*?\}")?;
-    let color_tag = re.find(&text).ok_or(ProgramError::ColorTagError)?.as_str();
-    let content = re.split(&text).nth(1).ok_or(ProgramError::TextError)?;
+    let color_tag = re.find(text).ok_or(ProgramError::ColorTag)?.as_str();
+    let content = re.split(text).nth(1).ok_or(ProgramError::Text)?;
 
-    Ok(Text::new(to_color(color_tag)?, content.to_string()))
+    Ok(Text{
+        color_tag: to_color(color_tag)?,
+        content: content.to_string()
+    })
 }
 
 fn parse_file(mut file: File) -> Result<Vec<Text>> {
@@ -98,11 +92,7 @@ fn display_text(text: Vec<Text>) {
 }
 
 fn main() -> Result<()> {
-    let path = args().nth(1);
-    if path.is_none() {
-        return Err(Error::new(ProgramError::PathError));
-    } 
-    let path = path.unwrap();
+    let path = args().nth(1).ok_or(ProgramError::Path)?;
     
     loop {
         print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
@@ -115,6 +105,6 @@ fn main() -> Result<()> {
         };
         println!();
 
-        sleep(Duration::from_millis(250))
+        sleep(Duration::from_millis(250));
     }
 }
