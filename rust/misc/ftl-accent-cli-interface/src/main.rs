@@ -8,6 +8,8 @@ use std::{
     collections::HashMap,
 };
 
+type HashPair = (HashMap<String, String>, HashMap<String, String>);
+
 fn take_input() -> Result<String> {
     let mut buf = String::new();
     stdin().read_line(&mut buf)?;
@@ -26,7 +28,7 @@ fn parse(file: String) -> Result<Vec<Vec<String>>> {
     Ok(ftl)
 }
 
-fn file_to_hashes(file: String) -> Result<(HashMap<String, String>, HashMap<String, String>)> {
+fn file_to_hashes(file: String) -> Result<HashPair> {
     let ftl = parse(file)?;
     let mut replaced_words: HashMap<String, String> = HashMap::new();
     let mut replacement_words: HashMap<String, String> = HashMap::new();
@@ -44,25 +46,32 @@ fn file_to_hashes(file: String) -> Result<(HashMap<String, String>, HashMap<Stri
     Ok((replaced_words, replacement_words))
 }
 
+fn replace_in_sentence(mut sentence: String, hash_pair: &HashPair) -> String {
+    let (replaced_words, replacement_words) = hash_pair;
+
+    // For each word, check if it's contained in the hash and replace it if so.
+    for word in sentence.clone().split(' ') {
+        if replaced_words.contains_key(word) {
+            sentence = sentence.replace(word, replacement_words[&replaced_words[word]].as_str())
+        }
+    }
+
+    sentence
+}
+
 fn main() -> Result<()> {
     // Get file input
     println!("Path to FTL file (with comments removed)");
     let file_input = take_input()?.trim().to_string();
 
     // Get the hashes
-    let (replaced_words, replacement_words) = file_to_hashes(file_input)?;
+    let hash_pair = file_to_hashes(file_input)?;
 
     // Get user input
     println!("Input a sentence");
     loop {
-        let mut input = take_input()?.to_lowercase().trim().to_string();
+        let input = take_input()?.to_lowercase().trim().to_string();
 
-        // Replace words
-        for word in input.clone().split(' ') {
-            if replaced_words.contains_key(word) {
-                input = input.replace(word, replacement_words[&replaced_words[word]].as_str());
-            }
-        }
-        println!("{input}");
+        println!("{}", replace_in_sentence(input, &hash_pair));
     }
 }
