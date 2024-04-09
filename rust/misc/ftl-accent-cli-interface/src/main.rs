@@ -53,7 +53,7 @@ fn main() -> Result<()> {
     let (replaced_words, replacement_words) = file_to_hashes(file_input)?;
 
     // Get user input
-    println!("Input a sentance");
+    println!("Input a sentence");
     loop {
         let mut input = take_input()?.to_lowercase().trim().to_string();
 
