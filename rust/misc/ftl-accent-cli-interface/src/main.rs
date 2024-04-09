@@ -47,11 +47,8 @@ fn file_to_hashes(file: String) -> Result<(HashMap<String, String>, HashMap<Stri
 fn main() -> Result<()> {
     // Get file input
     println!("Path to FTL file (with comments removed)");
-    let file_input = match take_input()?.trim().to_string() {
-        s if s.is_empty() => "archaic.ftl".to_string(),
-        s => s,
-    };
-    
+    let file_input = take_input()?.trim().to_string();
+
     // Get the hashes
     let (replaced_words, replacement_words) = file_to_hashes(file_input)?;
 
