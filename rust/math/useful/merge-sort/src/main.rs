@@ -20,10 +20,19 @@ fn merge<T: PartialOrd + Copy>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<T> {
     result
 }
 
-fn main() {
-    let a = vec![1, 3, 4];
-    let b = vec![2, 4, 5];
+fn merge_sort<T: PartialOrd + Copy>(to_sort: Vec<T>) -> Vec<T> {
+    if to_sort.len() == 1 {
+        return to_sort;
+    }
 
-    println!("A: {:?}\nB: {:?}", a, b);
-    println!("Merged: {:?}", merge(a, b));
+    let left  = to_sort[0..(to_sort.len() / 2)].to_vec();
+    let right = to_sort[(to_sort.len() / 2)..(to_sort.len())].to_vec();
+
+    merge(merge_sort(left), merge_sort(right))
+}
+
+fn main() {
+    let unsorted = vec![1, 8, 7, 2, 4, 6];
+
+    println!("{:?}", merge_sort(unsorted));
 }
