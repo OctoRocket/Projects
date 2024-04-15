@@ -22,10 +22,9 @@ fn merge_sort<T: PartialOrd + Copy>(to_sort: Vec<T>) -> Vec<T> {
         return to_sort;
     }
 
-    let left  = to_sort[0..(to_sort.len() / 2)].to_vec();
-    let right = to_sort[(to_sort.len() / 2)..(to_sort.len())].to_vec();
+    let split = to_sort.split_at(to_sort.len() / 2);
 
-    merge(merge_sort(left), merge_sort(right))
+    merge(merge_sort(split.0.to_vec()), merge_sort(split.1.to_vec()))
 }
 
 fn main() {
