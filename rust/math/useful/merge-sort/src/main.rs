@@ -11,12 +11,9 @@ fn merge<T: PartialOrd + Copy>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<T> {
         }
     }
 
-    if a.is_empty() {
-        result.append(&mut b);
-    } else {
-        result.append(&mut a);
-    }
-
+    // One list in guaranteed to be empty, appending both will only append leftovers
+    result.append(&mut a);
+    result.append(&mut b);
     result
 }
 
