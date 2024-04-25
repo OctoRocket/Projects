@@ -39,7 +39,7 @@ enum ProgramError {
 }
 
 #[derive(Debug)]
-struct  Text {
+struct Text {
     color_tag: Color,
     content: String
 }
