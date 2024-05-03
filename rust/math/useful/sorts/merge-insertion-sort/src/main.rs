@@ -63,7 +63,7 @@ impl<T: PartialOrd + Clone> PartialOrd for Value<T> {
 }
 
 fn main() {
-    let list = vec![3, 5, 1, 2, 7, 8, 1];
+    let list = vec![3, 5, 1, 2, 7, 8, 6];
 
     println!("{:?}", merge_insertion_sort(list));
 }
@@ -95,7 +95,7 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>) -> 
 
     let mut merged = vec![];
     while let (Some(a), Some(b)) = (list.pop(), list.pop()) {
-        if a > b {
+        if a < b {
             merged.push(Value::combine(a, b));
         } else {
             merged.push(Value::combine(b, a));
