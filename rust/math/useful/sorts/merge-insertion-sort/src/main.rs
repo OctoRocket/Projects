@@ -24,19 +24,20 @@ struct Comparator {
 
 impl Comparator {
     const fn new() -> Self {
-        Self {count: 0}
-    }
-
-    fn gt<T: PartialOrd>(&mut self, a: &T, b: &T) -> bool {
-        self.count += 1;
-
-        a > b
+        Self { count: 0 }
     }
 
     fn lt<T: PartialOrd>(&mut self, a: &T, b: &T) -> bool {
         self.count += 1;
 
         a < b
+    }
+
+    fn cmp<T: PartialOrd + >(&mut self, a: &T, b: &T) -> Ordering {
+        self.count += 1;
+
+        a.partial_cmp(b)
+            .expect("Partial ord failed in comparator component")
     }
 }
 
@@ -85,14 +86,17 @@ impl<T: PartialOrd + Clone> PartialOrd for Value<T> {
 }
 
 fn main() {
-    let list = vec![8, 7, 6, 5, 4, 3, 2, 1];
+    let list = vec![2, 1];
     let mut comparator = Comparator::new();
 
     println!("{:?}", merge_insertion_sort(list, &mut comparator));
     println!("Comparisons: {}", comparator.count);
 }
 
-fn merge_insertion_sort<T: PartialOrd + Clone + std::fmt::Debug>(list: Vec<T>, comparator: &mut Comparator) -> Vec<T> {
+fn merge_insertion_sort<T: PartialOrd + Clone + std::fmt::Debug>(
+    list: Vec<T>,
+    comparator: &mut Comparator,
+) -> Vec<T> {
     let boxes = list.into_iter().map(|e| Value::Data(e)).collect();
     recurse(boxes, comparator)
         .into_iter()
@@ -106,7 +110,10 @@ fn merge_insertion_sort<T: PartialOrd + Clone + std::fmt::Debug>(list: Vec<T>, c
         .collect()
 }
 
-fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>, comparator: &mut Comparator) -> Vec<Value<T>> {
+fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(
+    mut list: Vec<Value<T>>,
+    comparator: &mut Comparator,
+) -> Vec<Value<T>> {
     if list.len() == 1 {
         return list;
     }
@@ -141,8 +148,11 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>, com
 
     for index in jacobsthal {
         let value_at_index = *b_list[index].clone();
-        let location =
-            binary_search(&a_list[indices[index]..], &value_at_index,comparator) + indices[index];
+        let search_result =
+            (a_list[indices[index]..]).binary_search_by(|v| comparator.cmp(v, &value_at_index));
+        let location = match search_result {
+            Ok(r) | Err(r) => r,
+        } + indices[index];
 
         a_list.insert(location, value_at_index);
         indices = indices
@@ -153,7 +163,13 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>, com
     }
 
     if let Some(e) = extra {
-        a_list.insert(binary_search(&a_list, &e, comparator), e);
+        let search_result = &a_list.binary_search_by(|v| comparator.cmp(v, &e));
+        a_list.insert(
+            match search_result {
+                Ok(r) | Err(r) => *r,
+            },
+            e,
+        );
     }
 
     a_list
@@ -208,27 +224,4 @@ const fn sqrt(num: usize) -> usize {
     }
 
     v
-}
-
-fn binary_search<T: PartialOrd>(list: &[T], to_insert: &T, comparator: &mut Comparator) -> usize {
-    let mut bounds = (0, list.len());
-    let mut index = (bounds.0 + bounds.1) / 2;
-
-    while bounds.1 - bounds.0 > 1 {
-        if comparator.gt(&list[index], to_insert) {
-            bounds.1 = index;
-        } else if comparator.lt(&list[index], to_insert) {
-            bounds.0 = index;
-        } else {
-            break;
-        }
-
-        index = (bounds.0 + bounds.1) / 2;
-    }
-
-    if index != 0 || comparator.gt(to_insert, &list[index]) {
-        index = bounds.1;
-    }
-
-    index
 }
