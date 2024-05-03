@@ -18,6 +18,28 @@ enum Value<T: PartialOrd> {
     Pair(Box<Pair<T>>),
 }
 
+struct Comparator {
+    count: usize,
+}
+
+impl Comparator {
+    fn new() -> Self {
+        Comparator {count: 0}
+    }
+
+    fn gt<T: PartialOrd>(&mut self, a: &T, b: &T) -> bool {
+        self.count += 1;
+
+        a > b
+    }
+
+    fn lt<T: PartialOrd>(&mut self, a: &T, b: &T) -> bool {
+        self.count += 1;
+
+        a < b
+    }
+}
+
 impl<T: PartialOrd + Clone> Value<T> {
     fn combine(a: Self, b: Self) -> Self {
         let data = match a.clone() {
@@ -64,13 +86,15 @@ impl<T: PartialOrd + Clone> PartialOrd for Value<T> {
 
 fn main() {
     let list = vec![3, 5, 1, 2, 7, 8, 6];
+    let mut comparator = Comparator::new();
 
-    println!("{:?}", merge_insertion_sort(list));
+    println!("{:?}", merge_insertion_sort(list, &mut comparator));
+    println!("Comparisons: {}", comparator.count);
 }
 
-fn merge_insertion_sort<T: PartialOrd + Clone + std::fmt::Debug>(list: Vec<T>) -> Vec<T> {
+fn merge_insertion_sort<T: PartialOrd + Clone + std::fmt::Debug>(list: Vec<T>, comparator: &mut Comparator) -> Vec<T> {
     let boxes = list.into_iter().map(|e| Value::Data(e)).collect();
-    recurse(boxes)
+    recurse(boxes, comparator)
         .into_iter()
         .map(|v| {
             match v {
@@ -82,7 +106,7 @@ fn merge_insertion_sort<T: PartialOrd + Clone + std::fmt::Debug>(list: Vec<T>) -
         .collect()
 }
 
-fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>) -> Vec<Value<T>> {
+fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>, comparator: &mut Comparator) -> Vec<Value<T>> {
     if list.len() == 1 {
         return list;
     }
@@ -95,14 +119,14 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>) -> 
 
     let mut merged = vec![];
     while let (Some(a), Some(b)) = (list.pop(), list.pop()) {
-        if a < b {
+        if comparator.lt(&a, &b) {
             merged.push(Value::combine(a, b));
         } else {
             merged.push(Value::combine(b, a));
         }
     }
 
-    let to_insert = recurse(merged);
+    let to_insert = recurse(merged, comparator);
     let jacobsthal = jacobsthal_indices(to_insert.len());
     let mut indices = (0..to_insert.len()).collect::<Vec<usize>>();
     let mut a_list = to_insert
@@ -118,7 +142,7 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>) -> 
     for index in jacobsthal {
         let value_at_index = *b_list[index].clone();
         let location =
-            binary_search(&a_list[indices[index]..a_list.len()], &value_at_index) + indices[index];
+            binary_search(&a_list[indices[index]..a_list.len()], &value_at_index,comparator) + indices[index];
 
         a_list.insert(location, value_at_index);
         indices = indices
@@ -129,7 +153,7 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>) -> 
     }
 
     if let Some(e) = extra {
-        a_list.insert(binary_search(&a_list, &e), e);
+        a_list.insert(binary_search(&a_list, &e, comparator), e);
     }
 
     a_list
@@ -186,14 +210,14 @@ const fn sqrt(num: usize) -> usize {
     v
 }
 
-fn binary_search<T: PartialOrd>(list: &[T], to_insert: &T) -> usize {
+fn binary_search<T: PartialOrd>(list: &[T], to_insert: &T, comparator: &mut Comparator) -> usize {
     let mut bounds = (0, list.len());
     let mut index = (bounds.0 + bounds.1) / 2;
 
     while bounds.1 - bounds.0 > 1 {
-        if list[index] > *to_insert {
+        if comparator.gt(&list[index], to_insert) {
             bounds.1 = index;
-        } else if list[index] < *to_insert {
+        } else if comparator.lt(&list[index], to_insert) {
             bounds.0 = index;
         } else {
             break;
@@ -205,7 +229,7 @@ fn binary_search<T: PartialOrd>(list: &[T], to_insert: &T) -> usize {
     let offset = if list.is_empty() {
         0
     } else {
-        usize::from(*to_insert > list[index])
+        usize::from(comparator.gt(to_insert, &list[index]))
     };
 
     index + offset
