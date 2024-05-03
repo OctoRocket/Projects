@@ -142,7 +142,7 @@ fn recurse<T: PartialOrd + Clone + std::fmt::Debug>(mut list: Vec<Value<T>>, com
     for index in jacobsthal {
         let value_at_index = *b_list[index].clone();
         let location =
-            binary_search(&a_list[indices[index]..a_list.len()], &value_at_index,comparator) + indices[index];
+            binary_search(&a_list[indices[index]..], &value_at_index,comparator) + indices[index];
 
         a_list.insert(location, value_at_index);
         indices = indices
