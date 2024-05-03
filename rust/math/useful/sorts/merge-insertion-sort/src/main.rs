@@ -23,8 +23,8 @@ struct Comparator {
 }
 
 impl Comparator {
-    fn new() -> Self {
-        Comparator {count: 0}
+    const fn new() -> Self {
+        Self {count: 0}
     }
 
     fn gt<T: PartialOrd>(&mut self, a: &T, b: &T) -> bool {
