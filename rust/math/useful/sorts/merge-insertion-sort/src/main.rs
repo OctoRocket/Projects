@@ -85,7 +85,7 @@ impl<T: PartialOrd + Clone> PartialOrd for Value<T> {
 }
 
 fn main() {
-    let list = vec![3, 5, 1, 2, 7, 8, 6];
+    let list = vec![8, 7, 6, 5, 4, 3, 2, 1];
     let mut comparator = Comparator::new();
 
     println!("{:?}", merge_insertion_sort(list, &mut comparator));
@@ -226,11 +226,9 @@ fn binary_search<T: PartialOrd>(list: &[T], to_insert: &T, comparator: &mut Comp
         index = (bounds.0 + bounds.1) / 2;
     }
 
-    let offset = if list.is_empty() {
-        0
-    } else {
-        usize::from(comparator.gt(to_insert, &list[index]))
-    };
+    if index != 0 || comparator.gt(to_insert, &list[index]) {
+        index = bounds.1;
+    }
 
-    index + offset
+    index
 }
