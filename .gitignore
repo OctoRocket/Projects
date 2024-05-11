@@ -1,12 +1,27 @@
+# Remove all files without extentions
 *
 !*/
 !*.*
 
-Github/
+# Remove binaries
 *.o
 *.bin
-target/
+
+# GitHUb stuff
+Github/
+.devcontainer
+
+# Editor specific
 .vscode
 *.log
 .idea
-.devcontainer
+
+# Rust stuff
+target/
+
+# Clojure stuff
+.lsp
+.calva
+.clj-kondo
+.nrepl-port
+.cpcache
