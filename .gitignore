@@ -25,3 +25,6 @@ target/
 .clj-kondo
 .nrepl-port
 .cpcache
+
+# Haskell
+dist-newstyle
