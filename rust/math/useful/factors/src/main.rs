@@ -20,7 +20,7 @@ fn main() {
     // format it correctly
     for i in range {
         if input % i == 0 {
-            vec.push((input/i).to_string() + " * " + &i.to_string());
+            vec.push((input / i).to_string() + " * " + &i.to_string());
         }
     }
 
