@@ -1,21 +1,12 @@
 #![deny(clippy::all)]
-#![warn(
-    clippy::pedantic,
-    clippy::nursery,
-)]
+#![warn(clippy::pedantic, clippy::nursery)]
 
 mod args;
 mod functions;
 
+use args::{ProgramMode, ProgramSubcommand};
 use clap::Parser;
-use functions::{
-    manual,
-    auto,
-};
-use args::{
-    ProgramSubcommand,
-    ProgramMode,
-};
+use functions::{auto, manual};
 
 fn main() {
     let args = ProgramSubcommand::parse();

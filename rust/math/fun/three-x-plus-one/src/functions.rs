@@ -1,7 +1,4 @@
-use std::{
-    thread::sleep,
-    time::Duration,
-};
+use std::{thread::sleep, time::Duration};
 
 pub fn manual(mut number: u64, delay: u64) {
     let mut iterations = 0;
@@ -27,11 +24,11 @@ pub fn auto(delay: u64) {
             iterations += 1;
         }
         println!("{number}: {iterations}");
-        
+
         number += 1;
         running_value = number;
         iterations = 0;
-        
+
         sleep(Duration::from_millis(delay));
     }
 }
