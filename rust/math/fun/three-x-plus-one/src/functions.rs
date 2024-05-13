@@ -7,13 +7,13 @@ pub fn manual(mut number: u64, delay: u64) {
     let mut iterations = 0;
 
     while number != 1 {
-        println!("{}", number);
+        println!("{number}");
         number = three_x_plus_one(number);
         iterations += 1;
         sleep(Duration::from_millis(delay));
     }
 
-    println!("It took {} iterations", iterations);
+    println!("It took {iterations} iterations");
 }
 
 pub fn auto(delay: u64) {
@@ -26,7 +26,7 @@ pub fn auto(delay: u64) {
             running_value = three_x_plus_one(running_value);
             iterations += 1;
         }
-        println!("{}: {}", number, iterations);
+        println!("{number}: {iterations}");
         
         number += 1;
         running_value = number;
@@ -36,7 +36,7 @@ pub fn auto(delay: u64) {
     }
 }
 
-fn three_x_plus_one(number: u64) -> u64 {
+const fn three_x_plus_one(number: u64) -> u64 {
     if number % 2 == 0 {
         number / 2
     } else {

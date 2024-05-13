@@ -1,3 +1,9 @@
+#![deny(clippy::all)]
+#![warn(
+    clippy::pedantic,
+    clippy::nursery,
+)]
+
 mod args;
 mod functions;
 
@@ -7,15 +13,15 @@ use functions::{
     auto,
 };
 use args::{
-    ProgramArgs,
     ProgramSubcommand,
+    ProgramMode,
 };
 
 fn main() {
-    let args = ProgramArgs::parse();
+    let args = ProgramSubcommand::parse();
 
     match args.subcommand {
-        ProgramSubcommand::Manual(args) => manual(args.number, args.delay),
-        ProgramSubcommand::Auto(args) => auto(args.delay),
+        ProgramMode::Manual(args) => manual(args.number, args.delay),
+        ProgramMode::Auto(args) => auto(args.delay),
     }
 }
