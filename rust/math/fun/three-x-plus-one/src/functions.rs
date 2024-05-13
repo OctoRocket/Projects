@@ -1,3 +1,8 @@
+use std::{
+    thread::sleep,
+    time::Duration,
+};
+
 pub fn manual(mut number: u64, delay: u64) {
     let mut iterations = 0;
 
@@ -5,7 +10,7 @@ pub fn manual(mut number: u64, delay: u64) {
         println!("{}", number);
         number = three_x_plus_one(number);
         iterations += 1;
-        std::thread::sleep(std::time::Duration::from_millis(delay));
+        sleep(Duration::from_millis(delay));
     }
 
     println!("It took {} iterations", iterations);
@@ -27,7 +32,7 @@ pub fn auto(delay: u64) {
         running_value = number;
         iterations = 0;
         
-        std::thread::sleep(std::time::Duration::from_millis(delay));
+        sleep(Duration::from_millis(delay));
     }
 }
 

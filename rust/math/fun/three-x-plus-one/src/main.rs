@@ -13,12 +13,9 @@ use args::{
 
 fn main() {
     let args = ProgramArgs::parse();
+
     match args.subcommand {
-        ProgramSubcommand::Manual(args) => {
-            manual(args.number, args.delay)
-        }
-        ProgramSubcommand::Auto(args) => {
-            auto(args.delay)
-        }
+        ProgramSubcommand::Manual(args) => manual(args.number, args.delay),
+        ProgramSubcommand::Auto(args) => auto(args.delay),
     }
 }
