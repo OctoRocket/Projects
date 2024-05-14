@@ -1,6 +1,6 @@
 use std::env::args;
 
-const fn sqrt(num: usize) -> usize {
+const fn int_sqrt(num: usize) -> usize {
     let mut root = 1;
 
     while (root + 1) * (root + 1) <= num {
@@ -11,7 +11,9 @@ const fn sqrt(num: usize) -> usize {
 }
 
 fn get_factors(num: usize) -> impl Iterator<Item = (usize, usize)> {
-    (1..=sqrt(num)).map(move |n| (n, num / n))
+    (1..=int_sqrt(num))
+        .filter(move |n| num % n == 0)
+        .map(move |n| (n, num / n))
 }
 
 fn main() {
