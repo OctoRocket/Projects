@@ -6,8 +6,10 @@
 
 (defn int-sqrt "Return the integer closest to the square root of a number 
                 without going over."
-  ([n] (int-sqrt n n))
-  ([n m] (if (<= (* n n) m) n (int-sqrt (- n 1) m))))
+  ([n] (int-sqrt 1 n))
+  ([n m] (if (> (* (+ n 1) (+ n 1)) m)
+          n
+          (int-sqrt (+ n 1) m))))
 
 (defn factor "Return all the factors of a number."
   [n]
