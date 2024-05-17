@@ -1,21 +1,19 @@
-import Control.Monad (mapM_)
+import Text.Printf
 
-intSqrt :: Integer -> Integer
-intSqrt n = intSqrtWorker n n
-
-intSqrtWorker :: Integer -> Integer -> Integer
-intSqrtWorker l n = if n * n <= l then n else intSqrtWorker l (n - 1)
+recursiveSqrt :: Integer -> Integer
+recursiveSqrt num = worker 1 num
+  where
+    worker :: Integer -> Integer -> Integer
+    worker n m = if ((n + 1) * (n + 1)) > m
+      then n
+      else worker (n + 1) m
 
 factors :: Integer -> [(Integer, Integer)]
-factors n = zip filtered $ map (div n) filtered
-  where
-    filtered = map fst
-      $ filter snd
-      $ zip rang
-      $ (map ((==) 0)) 
-      $ map (mod n) rang
-    rang = [1..intSqrt n]
+factors n = map (\x -> (x, div n x))
+  $ filter (\x -> (==) 0 $ mod n x)
+  [1..recursiveSqrt n]
 
 main :: IO ()
 main = do
-  mapM_ print $ factors 16
+  mapM_ (\x -> printf "%d x %d\n" (fst x) (snd x))
+  $ factors 16
