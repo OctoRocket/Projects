@@ -1,33 +1,31 @@
-use std::io;
-
 fn fib(len: u128) -> Vec<u128> {
-    println!();
-    let mut a: u128 = 0;
-    let mut b: u128 = 1;
-    let mut c: u128;
-    let mut vec: Vec<u128> = Vec::new();
-    for _n in 1..=len {
-        vec.push(b.clone());
-        c = a + b.clone();
-        a = b;
-        b = c;
+    let mut fib_list = vec![0, 1];
+    for _ in 0..len {
+        fib_list.push(fib_list[(fib_list.len() - 2)..fib_list.len()].iter().sum());
     }
-    return vec;
+
+    fib_list[0..(fib_list.len() - 2)].to_vec()
+}
+
+fn build_string(fib_numbers: &[u128]) -> String {
+    fib_numbers
+        .iter()
+        .map(std::string::ToString::to_string)
+        .collect::<Vec<String>>()
+        .join(", ")
+        .trim_end_matches(", ")
+        .to_owned()
 }
 
 fn main() {
     println!("Enter the number of numbers of the fib seq that you want.");
-    let mut inp = String::new();
-    io::stdin()
-        .read_line(&mut inp)
-        .expect("Failed to read line.");
-    let inp = inp.trim().parse::<u128>().expect("Failed to parse");
-    let vec = fib(inp);
-    for n in 0..vec.len() {
-        if n < vec.len() - 1 {
-            print!("{}, ", vec[n])
-        } else {
-            println!("{}", vec[n])
-        }
-    }
+    let count = {
+        let mut buf = String::new();
+        std::io::stdin()
+            .read_line(&mut buf)
+            .expect("Failed to read line.");
+        buf.trim().parse::<u128>().expect("Not a valid number.")
+    };
+
+    println!("{}", build_string(&fib(count)));
 }
