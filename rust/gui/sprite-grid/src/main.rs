@@ -77,7 +77,7 @@ fn main() -> Result<()> {
 
     // Make a grass tile and then fill the grid with it
     let grass_tile = Tile::new(
-        "sprites/grass.bmp",
+        &"sprites/grass.bmp",
         &grid,
         0,
     )?;

@@ -138,7 +138,7 @@ impl Tile {
     /// A `Result` containing the new `Tile` if successful, or an error if the sprite file
     /// could not be opened or decoded.
     pub fn new<T>(
-        sprite_path: T,
+        sprite_path: &T,
         grid: &Grid,
         layer: u32,
     ) -> Result<Self> where T: ToString {
