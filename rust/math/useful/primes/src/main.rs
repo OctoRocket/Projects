@@ -1,37 +1,33 @@
-fn input() -> u64 {
-    let mut inp = String::new();
-    std::io::stdin().read_line(&mut inp).unwrap();
-    inp.trim().parse().unwrap()
-}
+use std::env::args;
 
-fn primes_under(limit: u64) -> Vec<u64> {
-    let mut primes = Vec::new();
-    // input 2 as the first prime, otherwise there are no primes
-    if limit > 2 {
-        primes.push(2);
-    } else {
-        return vec![];
+fn primes_up_to(limit: u64) -> Vec<u64> {
+    let mut primes = vec![];
+    let mut potential_primes = (2..=limit).rev().collect::<Vec<_>>();
+
+    while let Some(number) = potential_primes.pop() {
+        primes.push(number);
+        potential_primes.retain(|n| n % number != 0);
     }
-    // from 3 (first number above the first prime) to the limit
-    for i in 3..=limit {
-        let mut is_prime = true;
-        // if the number is divisable a prime number before it, then it is not prime.
-        for j in &primes {
-            if i % j == 0 {
-                is_prime = false;
-                break;
-            }
-        }
-        if is_prime {
-            primes.push(i);
-        }
-    }
+
     primes
 }
 
 fn main() {
-    let limit = input();
-    for i in primes_under(limit) {
+    for i in primes_up_to(
+        match args().collect::<Vec<_>>().get(1) {
+            Some(v) => match v.parse::<u64>() {
+                Ok(v) => v,
+                Err(_) => {
+                    println!("Couldn't parse input (did you provide a number?)");
+                    return;
+                }
+            }
+            None => {
+                println!("Please provide a number.");
+                return;
+            }
+        }
+    ) {
         println!("{}", i);
     }
 }
