@@ -2,60 +2,136 @@ use indoc::indoc;
 use std::{io::{self, Stdout, Write}, process, thread::sleep, time::Duration};
 use crossterm::{cursor, style::Stylize, terminal, ExecutableCommand, QueueableCommand};
 
+struct Animation<'a> {
+    states: &'a [&'a str],
+    frames: usize,
+    current_frame: usize,
+    position: (u16, u16),
+}
+
+impl<'a> Animation<'a> {
+    const fn new(position: (u16, u16), states: &'a [&str]) -> Self {
+        let frames = states.len();
+
+        Self {
+            states,
+            frames,
+            current_frame: 0,
+            position,
+        }
+    }
+
+    fn increment_current_frame(&mut self) {
+        if self.current_frame == self.frames - 1 {
+            self.current_frame = 0;
+        } else {
+            self.current_frame += 1;
+        }
+    }
+}
+
 // Eyes for when important characters die, flipping between the eight judgements
 // Also could be used for mysterious important characters with more of an
 // influence on the story.
-const DYING_STATES: &[&str] = &[
+const DYING_ANIMATION: Animation = Animation::new((0, 0), &[
     indoc! {"
-      |
-      *
-     / \\
+    ┌───────────┐
+    │     |     │
+    │     |     │
+    │     *     │
+    │    / \\    │
+    │           │
+    └───────────┘
     "},
     indoc! {"
-     \\
-      *--
-      |
+    ┌───────────┐
+    │   \\       │
+    │    \\      │
+    │     *--   │
+    │     |     │
+    │           │
+    └───────────┘
     "},
     indoc! {"
-       /
-    --*
-       \\
+    ┌───────────┐
+    │           │
+    │      /    │
+    │ ----*     │
+    │      \\    │
+    │           │
+    └───────────┘
     "},
     indoc! {"
-      |
-      *--
-     /
+    ┌───────────┐
+    │           │
+    │     |     │
+    │     *--   │
+    │    /      │
+    │   /       │
+    └───────────┘
     "},
     indoc! {"
-    \\ /
-     *
-     |
+    ┌───────────┐
+    │           │
+    │    \\ /    │
+    │     *     │
+    │     |     │
+    │     |     │
+    └───────────┘
     "},
     indoc! {"
-      |
-    --*
-       \\
+    ┌───────────┐
+    │           │
+    │     |     │
+    │   --*     │
+    │      \\    │
+    │       \\   │
+    └───────────┘
     "},
     indoc! {"
-    \\
-     *--
-    /
+    ┌───────────┐
+    │           │
+    │    \\      │
+    │     *---- │
+    │    /      │
+    │           │
+    └───────────┘
     "},
     indoc! {"
-       /
-    --*
-      |
+    ┌───────────┐
+    │       /   │
+    │      /    │
+    │   --*     │
+    │     |     │
+    │           │
+    └───────────┘
     "},
-];
+]);
 
-fn clear(stdout_handle: &mut Stdout, previous_state_height: u16) {
-    let current_row = cursor::position().unwrap().1;
-    for row in (current_row - previous_state_height)..=current_row {
-        let width = terminal::size().unwrap().0;
-        stdout_handle.queue(cursor::MoveTo(0, row)).unwrap();
-        stdout_handle.write_all(&vec![b' '; width as usize]).unwrap();
+// fn clear(stdout_handle: &mut Stdout, previous_state_height: u16) {
+//     let current_row = cursor::position().unwrap().1;
+//     for row in (current_row - previous_state_height)..=current_row {
+//         let width = terminal::size().unwrap().0;
+//         stdout_handle.queue(cursor::MoveTo(0, row)).unwrap();
+//         stdout_handle.write_all(&vec![b' '; width as usize]).unwrap();
+//     }
+//     stdout_handle.queue(cursor::MoveTo(0, current_row - previous_state_height)).unwrap();
+// }
+
+fn run_animations(animations: &mut [Animation], delay: Duration, stdout_handle: &mut Stdout) -> ! {
+    loop {
+        // Place each animation and each frame of the animation
+        for animation in animations.iter_mut() {
+            for (index, line) in animation.states[animation.current_frame].lines().enumerate() {
+                stdout_handle.queue(cursor::MoveTo(animation.position.0, animation.position.1 + index as u16)).unwrap();
+                stdout_handle.write_all(line.as_bytes()).unwrap();
+            }
+
+            stdout_handle.flush().unwrap();
+            animation.increment_current_frame();
+            sleep(delay);
+        }
     }
-    stdout_handle.queue(cursor::MoveTo(0, current_row - previous_state_height)).unwrap();
 }
 
 // The unwrapping is made under the assumption that it would have errored
@@ -92,12 +168,14 @@ fn main() {
         return;
     }
 
-    loop {
-        for state in DYING_STATES {
-            stdout_handle.write_all(state.as_bytes()).unwrap();
-            stdout_handle.flush().unwrap();
-            sleep(Duration::from_millis(250));
-            clear(&mut stdout_handle, state.lines().count() as u16);
-        }
-    }
+    run_animations(&mut [DYING_ANIMATION], Duration::from_millis(150), &mut stdout_handle)
+
+    // loop {
+    //     for state in DYING_STATES.states {
+    //         stdout_handle.write_all(state.as_bytes()).unwrap();
+    //         stdout_handle.flush().unwrap();
+    //         sleep(Duration::from_millis(150));
+    //         clear(&mut stdout_handle, state.lines().count() as u16);
+    //     }
+    // }
 }
