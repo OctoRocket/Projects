@@ -1,4 +1,4 @@
-use std::env::args;
+use std::{env::args, io::{stdout, Write}, time::Instant};
 
 fn primes_up_to(limit: u64) -> Vec<u64> {
     let mut primes = vec![];
@@ -12,22 +12,71 @@ fn primes_up_to(limit: u64) -> Vec<u64> {
     primes
 }
 
-fn main() {
-    for i in primes_up_to(
-        match args().collect::<Vec<_>>().get(1) {
-            Some(v) => match v.parse::<u64>() {
-                Ok(v) => v,
-                Err(_) => {
-                    println!("Couldn't parse input (did you provide a number?)");
-                    return;
-                }
+fn primes_up_to_traditional(limit: u64) -> Vec<u64> {
+    let mut primes = vec![];
+
+    for number in 2..=limit {
+        let mut prime = true;
+
+        for n in &primes {
+            if n > &sqrt_int(number) {
+                break;
+            } else if number % n == 0 {
+                prime = false;
+                break;
             }
-            None => {
-                println!("Please provide a number.");
+        }
+
+        if prime {
+            primes.push(number);
+        }
+    }
+
+    primes
+}
+
+fn sqrt_int(n: u64) -> u64 {
+    for i in 0..=n {
+        if i * i > n {
+            return i - 1;
+        }
+    }
+
+    unreachable!();
+}
+
+fn main() {
+    let limit = match args().collect::<Vec<_>>().get(1) {
+        Some(v) => match v.parse::<u64>() {
+            Ok(v) => v,
+            Err(_) => {
+                println!("Couldn't parse input (did you provide a positive number?)");
                 return;
             }
         }
-    ) {
-        println!("{}", i);
+        None => {
+            println!("Please provide a number.");
+            return;
+        }
+    };
+
+    let mut stdout_handle = stdout();
+
+    let before: Instant = Instant::now();
+    eprintln!("Seive");
+    for n in primes_up_to(limit) {
+        stdout_handle.write_all(format!("{n}\n").as_bytes()).unwrap();
     }
+    let after = Instant::now();
+    eprintln!("Took {:?}", after - before);
+
+    let before = Instant::now();
+    eprintln!("No seive");
+    for n in primes_up_to_traditional(limit) {
+        stdout_handle.write_all(format!("{n}\n").as_bytes()).unwrap();
+    }
+    let after = Instant::now();
+    eprintln!("Took {:?}", after - before);
+
+    stdout_handle.flush().unwrap();
 }
