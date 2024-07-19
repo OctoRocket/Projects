@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 fn read_line() -> f64 {
     let mut x = String::new();
@@ -8,11 +8,18 @@ fn read_line() -> f64 {
 }
 
 fn main() {
+    print!("A: ");
+    io::stdout().flush().unwrap();
     let a = read_line();
+    print!("B: ");
+    io::stdout().flush().unwrap();
     let b = read_line();
+    print!("C: ");
+    io::stdout().flush().unwrap();
     let c = read_line();
     // quadratic formula
     let x = (-b + ((b * b) - 4.0 * a * c).sqrt()) / 2.0 * a;
     let y = (-b - ((b * b) - 4.0 * a * c).sqrt()) / 2.0 * a;
     println!("{}, {}", x, y);
 }
+
