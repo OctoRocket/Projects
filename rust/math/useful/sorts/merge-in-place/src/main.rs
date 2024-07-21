@@ -1,3 +1,25 @@
+use std::{env, fs::File, io::Read, ptr, time::Instant};
+
+fn shift_down<T>(list: &mut Vec<T>, from: usize, to: usize) {
+    if from >= list.len() {
+        panic!("Tried to move from out of bounds index! (Index was {from} but list length is {})", list.len());
+    }
+    if to > list.len() {
+        panic!("Tried to move to out of index! (Index was {to} but list length is {})", list.len());
+    }
+    if to > from {
+        print!("Tried to move from smaller index to larger index! (From index {from} to index {to})");
+    }
+
+    unsafe {
+        let from_ptr = list.as_mut_ptr().add(from);
+        let to_ptr = list.as_mut_ptr().add(to);
+        let moved = from_ptr.read();
+        ptr::copy(to_ptr, to_ptr.add(1), from - to);
+        ptr::write(to_ptr, moved);
+    }
+}
+
 fn merge_in_place<T: Ord>(
     list: &mut Vec<T>,
     list_a_start: usize,
@@ -14,8 +36,9 @@ fn merge_in_place<T: Ord>(
         }
 
         if list[index_a] > list[index_b] {
-            let element = list.remove(index_b);
-            list.insert(index_a, element);
+            shift_down(list, index_b, index_a);
+            // let element = list.remove(index_b);
+            // list.insert(index_a, element);
             index_a += 1;
             index_b += 1;
             list_b_max += 1;
@@ -41,8 +64,35 @@ fn mergesort<T: Ord>(list: &mut Vec<T>) {
 }
 
 fn main() {
-    let mut list = vec![6, 2, 6, 7, 9, 0, 2, 4, 0, 1, 2, 6, 4, 3, 6, 2];
+    let file_name = match env::args().nth(1) {
+        Some(v) => v,
+        None => {
+            eprintln!("Please provide a file of newline seperated numbers to sort.");
+            return;
+        }
+    };
+    let mut file = match File::open(&file_name) {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Failed to open file {file_name}. ({e})");
+            return;
+        }
+    };
+    let mut lines = String::new();
+    match file.read_to_string(&mut lines) {
+        Ok(s) => s,
+        Err(_) => {
+            eprintln!("File isn't valid UTF-8! Are you sure this is a text file?");
+            return;
+        }
+    };
+
+    let mut list = lines.lines().filter_map(|l| l.parse::<i64>().ok()).collect();
+
     println!("{list:?}: start");
+    let time_before = Instant::now();
     mergesort(&mut list);
+    let time_after = Instant::now();
     println!("{list:?}: end");
+    eprintln!("Took {:?}.", time_after - time_before);
 }
