@@ -1,3 +1,5 @@
+use std::{env, fs::File, io::Read, time::Instant};
+
 fn merge<T: PartialOrd + Copy>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<T> {
     let mut result = vec![];
 
@@ -26,7 +28,35 @@ fn merge_sort<T: PartialOrd + Copy>(to_sort: Vec<T>) -> Vec<T> {
 }
 
 fn main() {
-    let unsorted = vec![1, 8, 7, 2, 4, 6];
+    let file_name = match env::args().nth(1) {
+        Some(v) => v,
+        None => {
+            eprintln!("Please provide a file of newline seperated numbers to sort.");
+            return;
+        }
+    };
+    let mut file = match File::open(&file_name) {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Failed to open file {file_name}. ({e})");
+            return;
+        }
+    };
+    let mut lines = String::new();
+    match file.read_to_string(&mut lines) {
+        Ok(s) => s,
+        Err(_) => {
+            eprintln!("File isn't valid UTF-8! Are you sure this is a text file?");
+            return;
+        }
+    };
 
-    println!("{:?}", merge_sort(unsorted));
+    let list = lines.lines().filter_map(|l| l.parse::<i64>().ok()).collect();
+
+    println!("{list:?}: start");
+    let time_before = Instant::now();
+    let result = merge_sort(list);
+    let time_after = Instant::now();
+    println!("{result:?}: end");
+    eprintln!("Took {:?}.", time_after - time_before)
 }
