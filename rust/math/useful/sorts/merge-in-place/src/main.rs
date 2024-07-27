@@ -64,12 +64,9 @@ fn mergesort<T: Ord>(list: &mut Vec<T>) {
 }
 
 fn main() {
-    let file_name = match env::args().nth(1) {
-        Some(v) => v,
-        None => {
-            eprintln!("Please provide a file of newline seperated numbers to sort.");
-            return;
-        }
+    let Some(file_name) = env::args().nth(1) else {
+        eprintln!("Please provide a file of newline seperated numbers to sort.");
+        return;
     };
     let mut file = match File::open(&file_name) {
         Ok(f) => f,
@@ -79,12 +76,11 @@ fn main() {
         }
     };
     let mut lines = String::new();
-    match file.read_to_string(&mut lines) {
-        Ok(s) => s,
-        Err(_) => {
-            eprintln!("File isn't valid UTF-8! Are you sure this is a text file?");
-            return;
-        }
+    if let Ok(s) = file.read_to_string(&mut lines) {
+        s
+    } else {
+        eprintln!("File isn't valid UTF-8! Are you sure this is a text file?");
+        return;
     };
 
     let mut list = lines.lines().filter_map(|l| l.parse::<i64>().ok()).collect();
