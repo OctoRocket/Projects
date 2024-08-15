@@ -1,35 +1,52 @@
-use std::{env, fs::File, io::Read, time::Instant};
+use std::{env, fmt::Debug, fs::File, io::Read, ptr, time::Instant};
 
-fn merge<T: PartialOrd + Copy>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<T> {
-    let mut result = vec![];
-
-    while !a.is_empty() && !b.is_empty() {
-        if a[0] < b[0] {
-            result.push(a[0]);
-            a.remove(0);
-        } else {
-            result.push(b[0]);
-            b.remove(0);
-        }
+fn shift_down<T>(list: &mut [T], from: usize, to: usize) {
+    if from >= list.len() {
+        panic!("Tried to move from out of bounds index! (Index was {from} but list length is {})", list.len());
+    }
+    if to > list.len() {
+        panic!("Tried to move to out of index! (Index was {to} but list length is {})", list.len());
+    }
+    if to > from {
+        print!("Tried to move from smaller index to larger index! (From index {from} to index {to})");
     }
 
-    // One list in guaranteed to be empty, appending both will only append leftovers
-    [result, a, b].concat()
+    unsafe {
+        let from_ptr = list.as_mut_ptr().add(from);
+        let to_ptr = list.as_mut_ptr().add(to);
+        let moved = from_ptr.read();
+        ptr::copy(to_ptr, to_ptr.add(1), from - to);
+        ptr::write(to_ptr, moved);
+    }
 }
 
-fn merge_sort<T: PartialOrd + Copy + Send>(to_sort: Vec<T>) -> Vec<T> {
-    if to_sort.len() == 1 {
-        return to_sort;
+fn merge_sort<T: Ord + Send + Debug>(list: &mut [T]) {
+    if list.len() == 1 {
+        return;
     }
 
-    let split = to_sort.split_at(to_sort.len() / 2);
-    let split_a = split.0.to_vec();
-    let split_b = split.1.to_vec();
-
-    let (sorted_a, sorted_b) = rayon::join(
+    let (split_a, split_b) = list.split_at_mut(list.len() / 2);
+    rayon::join(
         || merge_sort(split_a),
-        || merge_sort(split_b));
-    merge(sorted_a, sorted_b)
+        || merge_sort(split_b),
+    );
+
+    merge_in_place(list, list.len() / 2);
+}
+
+fn merge_in_place<T: Ord>(list: &mut [T], midpoint: usize) {
+    let mut right_index = midpoint;
+
+    for left_index in 0..list.len() {
+        if left_index >= right_index || right_index >= list.len() {
+            break;
+        }
+
+        if list[right_index] < list[left_index] {
+            shift_down(list, right_index, left_index);
+            right_index += 1;
+        }
+    }
 }
 
 fn main() {
@@ -52,11 +69,13 @@ fn main() {
         return;
     };
 
-    let mut list = lines.lines().filter_map(|l| l.parse::<i64>().ok()).collect();
+    let mut list = lines.lines()
+        .filter_map(|l| l.parse::<i64>().ok())
+        .collect::<Vec<_>>();
 
     println!("{list:?}: start");
     let time_before = Instant::now();
-    list = merge_sort(list);
+    merge_sort(&mut list);
     let time_after = Instant::now();
     println!("{list:?}: end");
     eprintln!("Took {:?}.", time_after - time_before);
