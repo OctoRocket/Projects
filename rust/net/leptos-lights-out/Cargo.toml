@@ -1,0 +1,10 @@
+[package]
+name = "leptos-lights-out"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
+getrandom = { version = "0.4.2", features = ["wasm_js"] }
+leptos = { version = "0.8.17", features = ["csr"] }
+rand = "0.10.0"
