@@ -1,0 +1,13 @@
+//TODO: Make this actually work correctly and scale font size
+
+@media print, (max-width: 70rem) {
+	#outer-bound {
+		width: 70rem;
+	}
+}
+
+@media screen and (min-width: 86rem) {
+	#outer-bound {
+		width: 85rem;
+	}
+}

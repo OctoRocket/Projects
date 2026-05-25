@@ -1,5 +1,6 @@
 @use "fonts";
 @use "title";
+@use "media-rescaling";
 
 $paper: #fffffa;
 $rock: #48473c;
@@ -69,7 +70,7 @@ $info-tint: #acd58c;
 }
 
 .column {
-	display: flex;
+	@extend .container;
 	flex-direction: column;
 }
 
@@ -87,6 +88,8 @@ $info-tint: #acd58c;
 
 #under-construction {
 	border-color: $yellow;
+	// Make sure the construction icon is aligned vertically
+	align-items: center;
 }
 
 #update-tracker {
@@ -99,26 +102,6 @@ $info-tint: #acd58c;
 #update-tracker p {
 	margin: 0;
 }
-
-@media print,
-(max-width: 70rem) {
-	#outer-bound {
-		width: 70rem;
-	}
-}
-
-@media screen and (min-width: 1300px) {
-	#outer-bound {
-		width: 90%;
-	}
-}
-
-@media screen and (min-width: 85rem) {
-	#outer-bound {
-		width: 85rem;
-	}
-}
-
 
 #outer-bound {
 	margin: 6rem auto;

@@ -60,8 +60,18 @@ fn Home() -> impl IntoView {
     view! {
         // Wrap everything in an outer bound to pad it
         <div id="outer-bound" class="clear column">
+            // Title
             <TitleHeading/>
-            <h1>"Welcome to Leptos!"</h1>
+
+            // Under construction sign
+            <div id="under-construction" class="container text-holding home-video main-section">
+                <img src="/art/under-construction.png" height="75" style="margin-right: 1rem;"/>
+                <div class="clear">
+                <p>"This webpage is under "<em>heavy</em>" construction. Please mind the holes."</p>
+                <p>"This is especially true with the leptos rewrite! A lot of things are in flux,
+                so don't be surprised if something is missing, looks weird, etc!"</p>
+                </div>
+            </div>
             <div>
                 <p>"Test:"<a href="https://example.com">"goob"</a></p>
                 <button on:click=on_click>"Click Me: " {count}</button>
