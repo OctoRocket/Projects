@@ -35,12 +35,14 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/asta-leptos.css"/>
 
         // sets the document and page information
-        <Title text="Asta!"/>
+        <Title text="Asta! (Leptos)"/>
         <Meta name="author" content="Asta/OctoRocket"/>
         <Meta name="description" content="A satellite drifting through space"/>
 
         // content for this welcome page
         <Router>
+            <Comment text="Test"/>
+            <template inner_html="<!-- note here -->"/>
             <Routes fallback=|| "Page not found.".into_view()> //TODO Make this a 404 page
                 <Route path=path!("") view=Home/>
             </Routes>
@@ -49,6 +51,8 @@ pub fn App() -> impl IntoView {
 }
 
 // Content below
+// The goal is to make the page as modular is possible, making it hopefully more
+// maintainable too
 
 /// The landing page
 #[component]
@@ -101,5 +105,12 @@ fn TitleHeading() -> impl IntoView {
                 <span id="title-title" class="description">, orbiting the abyss of some far off land...</span>
             </p>
         </div>
+    }
+}
+
+#[component]
+fn Comment(text: &'static str) -> impl IntoView {
+    view! {
+        <template inner_html=format!("<!-- {text} -->")/>
     }
 }
