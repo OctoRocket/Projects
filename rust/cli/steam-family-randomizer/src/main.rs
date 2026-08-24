@@ -11,7 +11,7 @@ use reqwest::Client;
 use std::{fs::File, io::{self, Read}};
 use rand::prelude::*;
 
-use crate::parser::all_ids;
+use crate::parser::{all_ids, title};
 
 macro_rules! time {
     ($code:expr) => {{
@@ -23,12 +23,14 @@ macro_rules! time {
     }};
 }
 
+const STEAM_URL: &str = "https://store.steampowered.com/app/";
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
     let mut rng = rand::rng();
 
-    // let http_client = Client::new();
+    let client = Client::new();
 
     let mut file = File::open(args.file).unwrap();
     let mut buf = String::new();
@@ -40,7 +42,6 @@ async fn main() -> Result<()> {
     ids.dedup();
 
     eprintln!("Fetching game names...");
-    // let all_game_info = time!(get_game_infos(http_client, ids).await?);
 
     let input = io::stdin();
     let mut all_game_names = ids;
@@ -48,7 +49,7 @@ async fn main() -> Result<()> {
         let mut buf = String::new();
         input.read_line(&mut buf)?;
         all_game_names.shuffle(&mut rng);
-        println!("https://www.protondb.com/app/{}", all_game_names[0]);
+        let name = get_game_name(&all_game_names[0], &client).await?;
     }
 
     // let har_file = File::open(args.file)?;
@@ -56,4 +57,11 @@ async fn main() -> Result<()> {
     // let steam_game_ids = get_steam_game_ids(parsed_har);
 
     // Ok(())
+}
+
+async fn get_game_name(id: &str, client: &Client) -> Result<String> {
+    let response = client.get(STEAM_URL.to_string() + id).send().await?;
+    let title = dbg!(title(&response.text().await?));
+
+    todo!()
 }
